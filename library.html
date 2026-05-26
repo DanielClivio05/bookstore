@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookstore — Library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <span class="nav-brand">📚 Libreria</span>
+    <a href="index.html" class="nav-link">Search</a>
+    <a href="stats.html" class="nav-link">Stats</a>
+    <a href="library.html" class="nav-link active">Library</a>
+    <a href="orders.html" class="nav-link">Orders</a>
+    <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
+  </nav>
+
+  <div class="page">
+    <div class="page-title">Library</div>
+    <div id="library-content">
+      <div class="empty"><div class="empty-icon">📚</div><p>Loading library…</p></div>
+    </div>
+  </div>
+
+  <script type="module" src="library.js"></script>
+</body>
+</html>

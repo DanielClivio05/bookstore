@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookstore — Stats</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <span class="nav-brand">📚 Libreria</span>
+    <a href="index.html" class="nav-link">Search</a>
+    <a href="stats.html" class="nav-link active">Stats</a>
+    <a href="library.html" class="nav-link">Library</a>
+    <a href="orders.html" class="nav-link">Orders</a>
+    <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
+  </nav>
+
+  <div class="page">
+    <div class="page-title">Inventory Stats</div>
+
+    <div id="low-stock-alert" style="display:none"></div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Titles</div>
+        <div class="stat-value" id="stat-titles">—</div>
+        <div class="stat-sub">unique books</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Stock</div>
+        <div class="stat-value" id="stat-stock">—</div>
+        <div class="stat-sub">copies in store</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Inventory Cost</div>
+        <div class="stat-value" id="stat-cost">—</div>
+        <div class="stat-sub">amount paid</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Retail Value</div>
+        <div class="stat-value" id="stat-value">—</div>
+        <div class="stat-sub">at selling price</div>
+      </div>
+    </div>
+
+    <div class="page-title" style="font-size:17px; margin-bottom:14px;">Stock by Age Group</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Age Group</th>
+            <th>Titles</th>
+            <th>Copies</th>
+            <th>Retail Value</th>
+          </tr>
+        </thead>
+        <tbody id="group-stats">
+          <tr><td colspan="4"><div class="empty"><div class="empty-icon">📊</div><p>Loading…</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module" src="stats.js"></script>
+</body>
+</html>

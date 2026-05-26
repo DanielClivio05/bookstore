@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookstore — Add Book</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <span class="nav-brand">📚 Libreria</span>
+    <a href="index.html" class="nav-link">Search</a>
+    <a href="stats.html" class="nav-link">Stats</a>
+    <a href="library.html" class="nav-link">Library</a>
+    <a href="orders.html" class="nav-link">Orders</a>
+    <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
+  </nav>
+
+  <div class="page">
+    <div class="page-title" id="form-title">Add a Book</div>
+
+    <div class="form-card">
+      <form id="book-form">
+        <input type="hidden" id="book-id">
+
+        <div class="form-row">
+          <label for="title">Book Title *</label>
+          <input type="text" id="title" placeholder="e.g. The Little Prince" required>
+        </div>
+
+        <div class="form-row">
+          <label for="author">Author</label>
+          <input type="text" id="author" placeholder="e.g. Antoine de Saint-Exupéry">
+        </div>
+
+        <div class="form-row">
+          <label for="isbn">ISBN</label>
+          <input type="text" id="isbn" placeholder="e.g. 9780156012195">
+          <div class="hint">Used to automatically fetch the book cover image</div>
+        </div>
+
+        <div class="form-row">
+          <label for="age_group">Age Group *</label>
+          <select id="age_group" required>
+            <option value="" disabled selected>Select age group…</option>
+            <option value="Children (0–5)">Children (0–5)</option>
+            <option value="Children (6–12)">Children (6–12)</option>
+            <option value="Young Adult">Young Adult (13–18)</option>
+            <option value="Adult">Adult</option>
+          </select>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-row" style="margin-bottom:0">
+            <label for="price_bought">Cost Price (€) *</label>
+            <input type="number" id="price_bought" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label for="price_sold">Selling Price (€) *</label>
+            <input type="number" id="price_sold" placeholder="0.00" step="0.01" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:18px">
+          <label for="quantity">Quantity in Stock *</label>
+          <input type="number" id="quantity" placeholder="0" min="0" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="submit-btn">Add Book</button>
+          <button type="button" class="btn-secondary" onclick="location.href='index.html'">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="add-book.js"></script>
+</body>
+</html>
