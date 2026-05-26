@@ -205,6 +205,13 @@ form.addEventListener('submit', async (e) => {
     return
   }
 
+  const rawCost = parseFloat(costInput.value)
+  const rawSale = parseFloat(saleInput.value)
+  if (Number.isNaN(rawCost) || Number.isNaN(rawSale)) {
+    showToast('Please enter valid prices before submitting.', true)
+    return
+  }
+
   const quantitySold = parseInt(quantityInput.value, 10)
   const inlineQty = getQuantityValidation(selectedBook, quantityInput.value)
   if (!inlineQty.ok) {
@@ -269,8 +276,8 @@ form.addEventListener('submit', async (e) => {
       book_title: titleInput.value.trim(),
       author: authorInput.value.trim() || null,
       quantity_sold: quantitySold,
-      cost_price: parseFloat(costInput.value),
-      sale_price: parseFloat(saleInput.value),
+      cost_price: Number.isNaN(rawCost) ? null : rawCost,
+      sale_price: Number.isNaN(rawSale) ? null : rawSale,
       date_sold: dateInput.value,
       notes: notesInput.value.trim() || null
     }
