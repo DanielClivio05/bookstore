@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookstore — Events</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Caveat:wght@400;700&family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=Fredoka+One&family=Lato:wght@400;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    /* ===== SECTION LABEL ===== */
+    .section-label {
+      font-size: 11.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 14px;
+    }
+
+    /* ===== TEMPLATE PICKER ===== */
+    .template-picker {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+    .template-picker-2col {
+      grid-template-columns: repeat(2, 1fr);
+      margin-bottom: 10px;
+    }
+    .template-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 14px 14px;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: var(--shadow);
+      text-align: center;
+      user-select: none;
+      font: inherit;
+      width: 100%;
+    }
+    .template-card:hover { border-color: var(--primary); }
+    .template-card.selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light), var(--shadow);
+    }
+    .template-name {
+      font-size: 13.5px; font-weight: 700;
+      margin-top: 12px; color: var(--text);
+    }
+    .template-desc {
+      font-size: 11.5px; color: var(--muted);
+      margin-top: 3px; line-height: 1.4;
+    }
+
+    /* ===== MORE TEMPLATES TOGGLE ===== */
+    .more-toggle-wrap { margin-bottom: 28px; }
+    .more-toggle-btn {
+      background: none; border: none;
+      color: var(--muted); font-size: 13px; font-weight: 500;
+      font-family: inherit; cursor: pointer;
+      padding: 6px 0; display: inline-flex;
+      align-items: center; gap: 6px;
+      transition: color 0.15s;
+    }
+    .more-toggle-btn:hover { color: var(--primary); }
+    #more-templates-section { margin-bottom: 28px; }
+
+    /* ===== COLOR PICKER ===== */
+    .color-picker-section {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.35s ease, opacity 0.25s ease, margin-bottom 0.35s ease;
+      margin-bottom: 0;
+    }
+    .color-picker-section.visible {
+      max-height: 240px;
+      opacity: 1;
+      margin-bottom: 28px;
+    }
+    .color-picker-row {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px;
+      box-shadow: var(--shadow);
+      max-width: 640px;
+    }
+    .color-picker-left {
+      display: flex; flex-direction: column; gap: 10px;
+      flex: 1; min-width: 200px;
+    }
+    .color-picker-label {
+      font-size: 12px; font-weight: 600;
+      color: var(--muted); letter-spacing: 0.04em;
+    }
+    .color-swatches {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      align-items: center;
+    }
+    .color-swatch {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2.5px solid transparent;
+      cursor: pointer; padding: 0;
+      transition: transform 0.12s, box-shadow 0.12s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.22);
+      position: relative; outline: none;
+    }
+    .color-swatch:hover { transform: scale(1.18); }
+    .color-swatch.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--primary);
+      transform: scale(1.1);
+    }
+    .color-custom-wrap {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px; cursor: pointer;
+      flex-shrink: 0;
+    }
+    .color-custom-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--muted); letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    #custom-color-input {
+      width: 40px; height: 40px;
+      border: 2px solid var(--border); border-radius: 8px;
+      padding: 2px; cursor: pointer; background: none;
+    }
+    #custom-color-input:hover { border-color: var(--primary); }
+
+    /* ===== TEMPLATE THUMBNAIL PREVIEWS ===== */
+    .template-preview {
+      width: 100%; border-radius: 6px;
+      overflow: hidden; position: relative;
+    }
+
+    /* --- Storybook (A4 portrait) --- */
+    .tp-storybook {
+      aspect-ratio: 210 / 297;
+      background: #FFF8EE;
+      border: 2px solid #C97B84;
+      padding: 6%;
+      display: flex; flex-direction: column;
+    }
+    .tp-storybook .tps-inner {
+      flex: 1; border: 1px solid #C97B84;
+      padding: 8% 10%;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0;
+    }
+    .tp-storybook .tps-stars  { font-size: 8px; color: #C97B84; letter-spacing: 3px; margin-bottom: 7%; }
+    .tp-storybook .tps-title  { height: 8%; background: #3D2B1F; border-radius: 2px; width: 76%; margin-bottom: 5%; }
+    .tp-storybook .tps-div    { height: 2px; background: #C97B84; width: 28%; margin-bottom: 5%; }
+    .tp-storybook .tps-sub    { height: 4.5%; background: rgba(122,158,126,0.5); border-radius: 2px; width: 60%; margin-bottom: 9%; }
+    .tp-storybook .tps-box    { width: 100%; background: rgba(201,123,132,0.08); border-radius: 4px; padding: 5% 0; margin-bottom: 7%; display: flex; flex-direction: column; align-items: center; gap: 7%; }
+    .tp-storybook .tps-row    { height: 4%; background: rgba(61,43,31,0.25); border-radius: 2px; width: 65%; }
+    .tp-storybook .tps-row.w50 { width: 48%; }
+    .tp-storybook .tps-spacer { flex: 1; }
+    .tp-storybook .tps-contact { height: 3.5%; background: rgba(122,158,126,0.4); border-radius: 2px; width: 55%; }
+
+    /* --- Instagram Pop (square) --- */
+    .tp-pop {
+      aspect-ratio: 1 / 1;
+      background: #FF6B6B;
+      padding: 11%;
+      display: flex; flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .tp-pop .tpp-deco  { position: absolute; top: 6%; right: 6%; font-size: 14px; color: rgba(255,255,255,0.3); line-height: 1; }
+    .tp-pop .tpp-brand { height: 5px; background: rgba(255,255,255,0.45); border-radius: 2px; width: 32%; }
+    .tp-pop .tpp-mid   { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 9%; padding: 10% 0; }
+    .tp-pop .tpp-title { height: 17%; background: #fff; border-radius: 3px; width: 88%; box-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
+    .tp-pop .tpp-sub   { height: 7%; background: rgba(255,255,255,0.55); border-radius: 2px; width: 65%; }
+    .tp-pop .tpp-bot   { display: flex; flex-direction: column; gap: 7%; border-top: 1px solid rgba(255,255,255,0.35); padding-top: 8%; }
+    .tp-pop .tpp-row   { height: 5px; background: rgba(255,255,255,0.7); border-radius: 2px; width: 58%; }
+    .tp-pop .tpp-row.w40 { width: 40%; }
+
+    /* --- Modern Whimsy (portrait, split) --- */
+    .tp-whimsy {
+      aspect-ratio: 210 / 297;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .tp-whimsy .tpw-top    { flex: 0 0 33%; background: #2D6A4F; padding: 8% 10%; display: flex; flex-direction: column; justify-content: flex-end; gap: 6%; }
+    .tp-whimsy .tpw-brand  { height: 5px; background: rgba(255,255,255,0.35); border-radius: 2px; width: 32%; }
+    .tp-whimsy .tpw-title  { height: 14%; background: #fff; border-radius: 2px; width: 82%; }
+    .tp-whimsy .tpw-div    { text-align: center; font-size: 8px; color: #2D6A4F; letter-spacing: 4px; padding: 3% 0; background: #FAFAF5; }
+    .tp-whimsy .tpw-bot    { flex: 1; background: #FAFAF5; padding: 3% 10%; display: flex; flex-direction: column; gap: 5%; }
+    .tp-whimsy .tpw-row    { height: 5px; background: rgba(45,106,79,0.3); border-radius: 2px; width: 68%; }
+    .tp-whimsy .tpw-row.w50 { width: 50%; }
+    .tp-whimsy .tpw-sep    { height: 1px; background: #E8E4DC; margin: 1% 0; }
+    .tp-whimsy .tpw-bul    { height: 4px; background: rgba(45,106,79,0.2); border-radius: 2px; width: 72%; }
+    .tp-whimsy .tpw-bul.w55 { width: 55%; }
+
+    /* --- Chalkboard (portrait) --- */
+    .tp-chalkboard {
+      aspect-ratio: 210 / 297;
+      background: #2B3A2B;
+      padding: 7%;
+      display: flex; flex-direction: column;
+      border: 3px solid #3A4E3A;
+    }
+    .tp-chalkboard .tpch-inner {
+      flex: 1; border: 2px dashed rgba(255,255,255,0.22);
+      padding: 8% 9%;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0;
+    }
+    .tp-chalkboard .tpch-brand  { height: 4px; background: rgba(255,255,255,0.4); border-radius: 2px; width: 40%; margin-bottom: 7%; }
+    .tp-chalkboard .tpch-title  { height: 10%; background: rgba(255,255,255,0.85); border-radius: 2px; width: 78%; margin-bottom: 3%; }
+    .tp-chalkboard .tpch-title2 { height: 8%; background: rgba(255,255,255,0.6); border-radius: 2px; width: 60%; margin-bottom: 5%; }
+    .tp-chalkboard .tpch-div    { border-top: 1px dashed rgba(255,255,255,0.3); width: 80%; margin-bottom: 5%; }
+    .tp-chalkboard .tpch-sub    { height: 5%; background: rgba(255,224,102,0.6); border-radius: 2px; width: 65%; margin-bottom: 9%; }
+    .tp-chalkboard .tpch-row    { height: 4%; background: rgba(255,255,255,0.35); border-radius: 2px; width: 68%; margin-bottom: 4%; }
+    .tp-chalkboard .tpch-row.w50 { width: 50%; }
+    .tp-chalkboard .tpch-spacer { flex: 1; }
+    .tp-chalkboard .tpch-contact { height: 3.5%; background: rgba(255,224,102,0.4); border-radius: 2px; width: 55%; }
+
+    /* --- Pastel Dream (portrait) --- */
+    .tp-pastel {
+      aspect-ratio: 210 / 297;
+      background: linear-gradient(145deg, #EDE0FF 0%, #FFE4D6 100%);
+      padding: 9%;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0;
+    }
+    .tp-pastel .tppas-brand  { height: 4px; background: rgba(155,107,204,0.5); border-radius: 2px; width: 38%; margin-bottom: 6%; }
+    .tp-pastel .tppas-deco   { font-size: 12px; margin-bottom: 5%; }
+    .tp-pastel .tppas-title  { height: 9%; background: #9B6BCC; border-radius: 3px; width: 78%; margin-bottom: 5%; }
+    .tp-pastel .tppas-sub    { height: 5%; background: rgba(139,92,246,0.35); border-radius: 2px; width: 60%; margin-bottom: 10%; }
+    .tp-pastel .tppas-card   { width: 100%; background: rgba(255,255,255,0.65); border-radius: 8px; padding: 6% 8%; display: flex; flex-direction: column; align-items: flex-start; gap: 7%; margin-bottom: 6%; }
+    .tp-pastel .tppas-row    { height: 4.5%; background: rgba(61,43,79,0.25); border-radius: 2px; width: 68%; }
+    .tp-pastel .tppas-row.w50 { width: 50%; }
+    .tp-pastel .tppas-spacer { flex: 1; }
+    .tp-pastel .tppas-contact { height: 4%; background: rgba(155,107,204,0.35); border-radius: 10px; width: 60%; }
+
+    /* --- Bookmark Strip (portrait, ~A4 thumbnail) --- */
+    .tp-bookmark {
+      aspect-ratio: 210 / 297;
+      display: flex; flex-direction: column;
+      overflow: hidden; border-radius: 6px;
+    }
+    .tp-bookmark .tpbk-top  { flex: 0 0 30%; background: #2A9D8F; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9%; }
+    .tp-bookmark .tpbk-deco { font-size: 14px; color: rgba(255,255,255,0.85); }
+    .tp-bookmark .tpbk-brand { height: 4px; background: rgba(255,255,255,0.5); border-radius: 2px; width: 42%; }
+    .tp-bookmark .tpbk-sep  { flex-shrink: 0; height: 2px; background: rgba(255,255,255,0.22); }
+    .tp-bookmark .tpbk-mid  { flex: 0 0 40%; background: #FFFEF8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8%; padding: 5% 10%; }
+    .tp-bookmark .tpbk-title { height: 11%; background: #1a1a1a; border-radius: 2px; width: 80%; }
+    .tp-bookmark .tpbk-sub  { height: 5%; background: rgba(0,0,0,0.22); border-radius: 2px; width: 58%; }
+    .tp-bookmark .tpbk-sep2 { flex-shrink: 0; height: 2px; background: rgba(0,0,0,0.06); }
+    .tp-bookmark .tpbk-bot  { flex: 1; background: #2A9D8F; padding: 5% 10%; display: flex; flex-direction: column; gap: 8%; justify-content: center; }
+    .tp-bookmark .tpbk-row  { height: 5px; background: rgba(255,255,255,0.6); border-radius: 2px; width: 70%; }
+    .tp-bookmark .tpbk-row.w50 { width: 50%; }
+
+    /* ===== EVENTS FORM ===== */
+    .events-form-card { max-width: 640px; }
+    #generate-btn { width: 100%; padding: 13px; font-size: 15px; }
+    #generate-btn:disabled { opacity: 0.42; cursor: not-allowed; }
+
+    /* ===== POSTER PREVIEW SECTION ===== */
+    .poster-preview-section { margin-top: 32px; margin-bottom: 48px; }
+    .poster-outer { display: flex; justify-content: center; padding: 0 20px; }
+
+    /* =========================================
+       POSTER 1: STORYBOOK
+       Print size: A4 at 300dpi = 2480 × 3508px
+    ========================================= */
+    .poster-storybook {
+      width: 100%; max-width: 420px;
+      aspect-ratio: 210 / 297;
+      background: #FFF8EE;
+      padding: 14px;
+      border: 3px solid #C97B84;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      font-family: 'Lato', Georgia, sans-serif;
+      color: #3D2B1F;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .ps-frame {
+      border: 1px solid #C97B84;
+      padding: 28px 24px;
+      position: relative;
+      flex: 1; min-height: 0; overflow: hidden;
+    }
+    .ps-corner {
+      position: absolute;
+      font-size: 14px; color: #C97B84;
+      line-height: 1;
+    }
+    .ps-corner-tl { top: 8px;  left: 10px; }
+    .ps-corner-tr { top: 8px;  right: 10px; }
+    .ps-corner-bl { bottom: 8px; left: 10px; }
+    .ps-corner-br { bottom: 8px; right: 10px; }
+    .ps-brand-row {
+      text-align: center;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 3.5px; text-transform: uppercase;
+      color: #C97B84; margin-bottom: 14px;
+    }
+    .ps-event-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 44px; font-weight: 900; line-height: 1.08;
+      text-align: center; color: #3D2B1F;
+      margin-bottom: 10px;
+      overflow-wrap: break-word; word-break: break-word; hyphens: auto;
+    }
+    .ps-divider {
+      text-align: center; color: #C97B84;
+      font-size: 13px; letter-spacing: 7px;
+      margin-bottom: 10px;
+    }
+    .ps-tagline {
+      font-size: 14px; font-style: italic;
+      text-align: center; color: #7A9E7E;
+      margin-bottom: 16px; line-height: 1.5;
+      font-family: 'Lato', sans-serif;
+    }
+    .ps-meta {
+      background: rgba(201,123,132,0.07);
+      border-radius: 8px; padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .ps-meta-row {
+      display: flex; align-items: flex-start;
+      gap: 8px; margin-bottom: 7px; font-size: 15px;
+    }
+    .ps-meta-row:last-child { margin-bottom: 0; }
+    .ps-meta-icon { width: 20px; flex-shrink: 0; }
+    .ps-meta-label { font-weight: 700; color: #C97B84; min-width: 18px; }
+    .ps-meta-text  { color: #3D2B1F; line-height: 1.4; overflow-wrap: break-word; word-break: break-word; min-width: 0; flex: 1; }
+    .ps-bullets { margin-bottom: 12px; }
+    .ps-bullet {
+      display: flex; align-items: flex-start; gap: 7px;
+      font-size: 14px; color: #5A4030;
+      margin-bottom: 5px; line-height: 1.4;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .ps-bullet > span:last-child { min-width: 0; flex: 1; }
+    .ps-bullet-dot { color: #C97B84; flex-shrink: 0; }
+    .ps-contact {
+      text-align: center; font-size: 12.5px; color: #7A9E7E;
+      border-top: 1px dashed #C97B84; padding-top: 16px; margin-bottom: 8px;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+
+    /* =========================================
+       POSTER 2: INSTAGRAM POP
+       Export size: 1080 × 1080px
+    ========================================= */
+    .poster-pop {
+      width: 100%; max-width: 420px;
+      aspect-ratio: 1 / 1;
+      background: #FF6B6B;
+      padding: 9%;
+      font-family: 'Fredoka One', cursive;
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      position: relative;
+      display: flex; flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .ppo-bg-circle {
+      position: absolute;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      top: -80px; right: -80px;
+      pointer-events: none;
+    }
+    .ppo-bg-circle-2 {
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      bottom: -60px; left: -50px;
+      pointer-events: none;
+    }
+    .ppo-deco-corner {
+      position: absolute;
+      top: 6%; right: 6%;
+      font-size: 26px; line-height: 1;
+      color: rgba(255,255,255,0.25);
+      pointer-events: none;
+    }
+    .ppo-top { position: relative; }
+    .ppo-brand {
+      font-family: 'Lato', sans-serif;
+      font-size: 11.5px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+    }
+    .ppo-middle {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; padding: 20px 0;
+      position: relative; overflow: hidden;
+    }
+    .ppo-event-name {
+      font-size: 52px; line-height: 1.0;
+      font-weight: 400; /* Fredoka One is inherently bold */
+      margin-bottom: 16px;
+      text-shadow: 3px 4px 0 rgba(0,0,0,0.12);
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .ppo-tagline {
+      font-family: 'Lato', sans-serif;
+      font-size: 15px; color: rgba(255,255,255,0.85);
+      line-height: 1.5; font-style: italic;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .ppo-bottom {
+      border-top: 1.5px solid rgba(255,255,255,0.3);
+      padding-top: 18px;
+      display: flex; flex-direction: column; gap: 8px;
+      position: relative;
+    }
+    .ppo-bottom-row {
+      font-family: 'Lato', sans-serif;
+      font-size: 13.5px; color: rgba(255,255,255,0.9);
+      display: flex; align-items: center; gap: 9px;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .ppo-bottom-row > span:last-child { min-width: 0; overflow-wrap: break-word; word-break: break-word; }
+    .ppo-icon { font-size: 15px; }
+    .ppo-bullets { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .ppo-bullet-tag {
+      font-family: 'Lato', sans-serif;
+      font-size: 11px; font-weight: 700;
+      padding: 4px 12px; border-radius: 20px;
+      background: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.95);
+    }
+
+    /* =========================================
+       POSTER 3: MODERN WHIMSY
+       Print size: A4 at 300dpi = 2480 × 3508px
+    ========================================= */
+    .poster-whimsy {
+      width: 100%; max-width: 420px;
+      aspect-ratio: 210 / 297;
+      background: #FAFAF5;
+      font-family: 'DM Sans', sans-serif;
+      color: #1a1a1a;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .pw-header {
+      background: #2D6A4F;
+      padding: 28px 36px 24px;
+      flex-shrink: 0;
+    }
+    .pw-brand-row {
+      font-size: 10.5px; font-weight: 600;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-bottom: 30px;
+    }
+    .pw-event-name {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 46px; line-height: 1.06;
+      font-weight: 400; color: #fff;
+      margin-bottom: 14px;
+      overflow-wrap: break-word; word-break: break-word; hyphens: auto;
+    }
+    .pw-tagline {
+      font-size: 14.5px; color: rgba(255,255,255,0.7);
+      font-style: italic; line-height: 1.55;
+    }
+    .pw-divider {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; padding: 10px 36px;
+      background: #FAFAF5;
+      color: #2D6A4F; font-size: 12px;
+      flex-shrink: 0;
+    }
+    .pw-divider-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #2D6A4F; flex-shrink: 0;
+    }
+    .pw-divider-line {
+      flex: 1; height: 1px; background: rgba(45,106,79,0.2);
+    }
+    .pw-body { padding: 4px 36px 36px; background: #FAFAF5; flex: 1; min-height: 0; overflow: hidden; }
+    .pw-meta { margin-bottom: 22px; }
+    .pw-meta-row {
+      display: flex; align-items: flex-start;
+      gap: 12px; margin-bottom: 12px; font-size: 16px;
+    }
+    .pw-meta-row:last-child { margin-bottom: 0; }
+    .pw-meta-icon { flex-shrink: 0; }
+    .pw-meta-block { min-width: 0; flex: 1; }
+    .pw-meta-label {
+      display: block; font-size: 10px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: #2D6A4F; margin-bottom: 2px;
+    }
+    .pw-meta-text { color: #2A2A2A; font-weight: 500; line-height: 1.4; overflow-wrap: break-word; word-break: break-word; }
+    .pw-separator { height: 1px; background: #E8E4DC; margin: 20px 0; }
+    .pw-bullets { margin-bottom: 22px; }
+    .pw-bullet {
+      display: flex; align-items: flex-start; gap: 9px;
+      font-size: 15px; color: #444; margin-bottom: 8px; line-height: 1.45;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .pw-bullet > span:last-child { min-width: 0; flex: 1; }
+    .pw-bullet-dot {
+      width: 6px; height: 6px; background: #2D6A4F; border-radius: 50%;
+      flex-shrink: 0; margin-top: 5px;
+    }
+    .pw-contact { font-size: 13px; color: #777; overflow-wrap: break-word; word-break: break-word; }
+
+    /* =========================================
+       POSTER 4: CHALKBOARD
+       Print size: A4 at 300dpi = 2480 × 3508px
+    ========================================= */
+    .poster-chalkboard {
+      width: 100%; max-width: 420px;
+      aspect-ratio: 210 / 297;
+      background: #2B3A2B;
+      padding: 16px;
+      border: 5px solid #3A4E3A;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      font-family: 'Caveat', cursive;
+      color: #fff;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .pch-frame {
+      border: 2px dashed rgba(255,255,255,0.22);
+      padding: 24px 24px 28px;
+      flex: 1; min-height: 0; overflow: hidden;
+    }
+    .pch-brand {
+      text-align: center;
+      font-size: 12px; color: rgba(255,255,255,0.5);
+      letter-spacing: 3px; margin-bottom: 14px;
+    }
+    .pch-event-name {
+      font-size: 44px; line-height: 1.05;
+      text-align: center; color: #fff;
+      margin-bottom: 4px;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.25);
+      overflow-wrap: break-word; word-break: break-word; hyphens: auto;
+    }
+    .pch-deco { text-align: center; font-size: 14px; color: #FFE066; margin-bottom: 6px; }
+    .pch-divider {
+      border: none; border-top: 2px dashed rgba(255,255,255,0.3);
+      margin: 12px 0;
+    }
+    .pch-tagline {
+      font-size: 20px; text-align: center;
+      color: #FFE066; margin-bottom: 14px; line-height: 1.4;
+    }
+    .pch-meta { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+    .pch-meta-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 18px; color: rgba(255,255,255,0.9); line-height: 1.3;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .pch-meta-row > span:last-child { min-width: 0; flex: 1; overflow-wrap: break-word; word-break: break-word; }
+    .pch-meta-icon { flex-shrink: 0; font-size: 15px; }
+    .pch-divider-2 {
+      border: none; border-top: 2px dashed rgba(255,255,255,0.25);
+      margin: 10px 0;
+    }
+    .pch-bullets { margin-bottom: 10px; }
+    .pch-bullet {
+      font-size: 16px; color: rgba(255,255,255,0.85);
+      margin-bottom: 5px; display: flex;
+      align-items: flex-start; gap: 7px; line-height: 1.35;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .pch-bullet > span:last-child { min-width: 0; flex: 1; }
+    .pch-bullet-mark { color: #FFE066; flex-shrink: 0; }
+    .pch-contact {
+      font-size: 14px; text-align: center; color: #FFE066;
+      border-top: 2px dashed rgba(255,255,255,0.25); padding-top: 10px;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+
+    /* =========================================
+       POSTER 5: PASTEL DREAM
+       Print size: A4 at 300dpi = 2480 × 3508px
+    ========================================= */
+    .poster-pastel {
+      width: 100%; max-width: 420px;
+      aspect-ratio: 210 / 297;
+      background: linear-gradient(145deg, #EDE0FF 0%, #FFE4D6 60%, #FFE4EC 100%);
+      padding: 36px 36px;
+      font-family: 'Baloo 2', cursive;
+      color: #3D2B4F;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .pp-brand {
+      text-align: center; font-size: 11px; font-weight: 600;
+      letter-spacing: 2.5px; text-transform: uppercase;
+      color: #A67FBF; margin-bottom: 12px;
+    }
+    .pp-deco { text-align: center; font-size: 22px; margin-bottom: 8px; }
+    .pp-event-name {
+      font-size: 44px; font-weight: 800; line-height: 1.08;
+      text-align: center; color: #5B2D8E;
+      margin-bottom: 10px;
+      text-shadow: 1px 2px 0 rgba(255,255,255,0.5);
+      overflow-wrap: break-word; word-break: break-word; hyphens: auto;
+    }
+    .pp-tagline {
+      font-size: 14px; text-align: center;
+      color: #8B5CF6; margin-bottom: 16px;
+      line-height: 1.5; font-style: italic; font-weight: 400;
+    }
+    .pp-card {
+      background: rgba(255,255,255,0.72);
+      border-radius: 14px; padding: 14px 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+    }
+    .pp-meta-row {
+      display: flex; align-items: flex-start;
+      gap: 8px; margin-bottom: 8px; font-size: 15px;
+      color: #3D2B4F;
+    }
+    .pp-meta-row:last-child { margin-bottom: 0; }
+    .pp-meta-icon { flex-shrink: 0; }
+    .pp-meta-text { line-height: 1.4; overflow-wrap: break-word; word-break: break-word; min-width: 0; flex: 1; }
+    .pp-meta-label { font-weight: 700; color: #9B6BCC; }
+    .pp-bullets { margin-bottom: 10px; }
+    .pp-bullet {
+      display: flex; align-items: flex-start; gap: 7px;
+      font-size: 14px; color: #5A3D7A;
+      margin-bottom: 5px; line-height: 1.4;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .pp-bullet > span:last-child { min-width: 0; flex: 1; }
+    .pp-bullet-dot { color: #F59E0B; font-size: 16px; flex-shrink: 0; margin-top: -2px; }
+    .pp-contact {
+      text-align: center; font-size: 14px; color: #8B5CF6;
+      background: rgba(255,255,255,0.55); border-radius: 12px;
+      padding: 10px 16px;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+
+    /* =========================================
+       POSTER 6: BOOKMARK STRIP
+       Export size: 1080 × 1920px
+    ========================================= */
+    .poster-bookmark {
+      width: 100%; max-width: 280px;
+      aspect-ratio: 9 / 16;
+      display: flex; flex-direction: column;
+      font-family: 'Lato', sans-serif;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      overflow: hidden;
+    }
+    .pbk-top {
+      flex: 0 0 30%;
+      background: #2A9D8F;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px 24px; gap: 8px;
+    }
+    .pbk-deco {
+      font-size: 42px; line-height: 1;
+      color: rgba(255,255,255,0.9);
+    }
+    .pbk-brand {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: rgba(255,255,255,0.72);
+    }
+    .pbk-sep { flex-shrink: 0; height: 2px; }
+    .pbk-mid {
+      flex: 0 0 40%;
+      background: #FFFEF8;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 20px 26px; text-align: center; gap: 12px;
+    }
+    .pbk-event-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 28px; line-height: 1.08; color: #1A1A1A;
+      overflow-wrap: break-word; word-break: break-word; hyphens: auto;
+    }
+    .pbk-tagline {
+      font-family: 'Lato', sans-serif;
+      font-size: 13px; font-style: italic;
+      color: #777; line-height: 1.5;
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .pbk-bot {
+      flex: 1;
+      background: #2A9D8F;
+      display: flex; flex-direction: column;
+      padding: 18px 24px; gap: 10px; justify-content: center;
+    }
+    .pbk-detail {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: rgba(255,255,255,0.9);
+      overflow-wrap: break-word; word-break: break-word;
+    }
+    .pbk-detail > span:last-child { min-width: 0; flex: 1; }
+    .pbk-detail-icon { flex-shrink: 0; }
+    .pbk-bullets { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .pbk-bullet-tag {
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 16px;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+    }
+
+    @media (max-width: 640px) {
+      .template-picker,
+      .template-picker-2col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <span class="nav-brand">📚 Libreria</span>
+    <a href="index.html" class="nav-link">Search</a>
+    <a href="stats.html" class="nav-link">Stats</a>
+    <a href="library.html" class="nav-link">Library</a>
+    <a href="orders.html" class="nav-link">Orders</a>
+    <a href="sales.html" class="nav-link">Sales</a>
+    <a href="events.html" class="nav-link active">Events</a>
+    <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
+  </nav>
+
+  <div class="page">
+    <div class="page-title">Events</div>
+
+    <!-- SECTION 1: Template Picker -->
+    <div class="section-label">Choose a Template</div>
+    <div class="template-picker" id="template-picker">
+
+      <button type="button" class="template-card" data-template="storybook">
+        <div class="template-preview tp-storybook">
+          <div class="tps-inner">
+            <div class="tps-stars">✦ ✦ ✦</div>
+            <div class="tps-title"></div>
+            <div class="tps-div"></div>
+            <div class="tps-sub"></div>
+            <div class="tps-box">
+              <div class="tps-row"></div>
+              <div class="tps-row w50"></div>
+              <div class="tps-row"></div>
+            </div>
+            <div class="tps-row" style="width:65%;margin-bottom:4%"></div>
+            <div class="tps-row" style="width:50%;margin-bottom:4%"></div>
+            <div class="tps-spacer"></div>
+            <div class="tps-contact"></div>
+          </div>
+        </div>
+        <div class="template-name">Storybook</div>
+        <div class="template-desc">Warm &amp; cozy · A4 portrait</div>
+      </button>
+
+      <button type="button" class="template-card" data-template="pop">
+        <div class="template-preview tp-pop">
+          <div class="tpp-deco">✦<br>✦</div>
+          <div class="tpp-brand"></div>
+          <div class="tpp-mid">
+            <div class="tpp-title"></div>
+            <div class="tpp-sub"></div>
+          </div>
+          <div class="tpp-bot">
+            <div class="tpp-row"></div>
+            <div class="tpp-row w40"></div>
+          </div>
+        </div>
+        <div class="template-name">Instagram Pop</div>
+        <div class="template-desc">Bold &amp; bright · 1:1 square</div>
+      </button>
+
+      <button type="button" class="template-card" data-template="whimsy">
+        <div class="template-preview tp-whimsy">
+          <div class="tpw-top">
+            <div class="tpw-brand"></div>
+            <div class="tpw-title"></div>
+          </div>
+          <div class="tpw-div">✦ · ✦ · ✦</div>
+          <div class="tpw-bot">
+            <div class="tpw-row"></div>
+            <div class="tpw-row w50"></div>
+            <div class="tpw-sep"></div>
+            <div class="tpw-bul"></div>
+            <div class="tpw-bul w55"></div>
+          </div>
+        </div>
+        <div class="template-name">Modern Whimsy</div>
+        <div class="template-desc">Split layout · print &amp; digital</div>
+      </button>
+
+    </div>
+
+    <!-- More Templates Toggle -->
+    <div class="more-toggle-wrap">
+      <button type="button" class="more-toggle-btn" id="more-toggle-btn" aria-expanded="false" aria-controls="more-templates-section">
+        ▸ Show more templates
+      </button>
+    </div>
+
+    <!-- More Templates Section (hidden by default) -->
+    <div id="more-templates-section" hidden>
+      <div class="section-label">More Options</div>
+      <div class="template-picker" id="template-picker-more">
+
+        <button type="button" class="template-card" data-template="chalkboard">
+          <div class="template-preview tp-chalkboard">
+            <div class="tpch-inner">
+              <div class="tpch-brand"></div>
+              <div class="tpch-title"></div>
+              <div class="tpch-title2"></div>
+              <div class="tpch-div"></div>
+              <div class="tpch-sub"></div>
+              <div class="tpch-row"></div>
+              <div class="tpch-row w50"></div>
+              <div class="tpch-row"></div>
+              <div class="tpch-spacer"></div>
+              <div class="tpch-contact"></div>
+            </div>
+          </div>
+          <div class="template-name">Chalkboard</div>
+          <div class="template-desc">Nostalgic · handwritten feel</div>
+        </button>
+
+        <button type="button" class="template-card" data-template="pastel">
+          <div class="template-preview tp-pastel">
+            <div class="tppas-brand"></div>
+            <div class="tppas-deco">🌸</div>
+            <div class="tppas-title"></div>
+            <div class="tppas-sub"></div>
+            <div class="tppas-card">
+              <div class="tppas-row"></div>
+              <div class="tppas-row w50"></div>
+              <div class="tppas-row"></div>
+            </div>
+            <div class="tppas-spacer"></div>
+            <div class="tppas-contact"></div>
+          </div>
+          <div class="template-name">Pastel Dream</div>
+          <div class="template-desc">Soft &amp; dreamy · younger events</div>
+        </button>
+
+        <button type="button" class="template-card" data-template="bookmark">
+          <div class="template-preview tp-bookmark">
+            <div class="tpbk-top">
+              <div class="tpbk-deco">✦</div>
+              <div class="tpbk-brand"></div>
+            </div>
+            <div class="tpbk-sep"></div>
+            <div class="tpbk-mid">
+              <div class="tpbk-title"></div>
+              <div class="tpbk-sub"></div>
+            </div>
+            <div class="tpbk-sep2"></div>
+            <div class="tpbk-bot">
+              <div class="tpbk-row"></div>
+              <div class="tpbk-row w50"></div>
+              <div class="tpbk-row"></div>
+            </div>
+          </div>
+          <div class="template-name">Bookmark Strip</div>
+          <div class="template-desc">Story format · tall &amp; narrow</div>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- Color Picker -->
+    <div id="color-picker-section" class="color-picker-section">
+      <div class="section-label">Customize Color</div>
+      <div class="color-picker-row">
+        <div class="color-picker-left">
+          <div class="color-picker-label">Background Color</div>
+          <div id="color-swatches" class="color-swatches"></div>
+        </div>
+        <label class="color-custom-wrap">
+          <span class="color-custom-label">Custom</span>
+          <input type="color" id="custom-color-input" value="#FF6B6B">
+        </label>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Event Details Form -->
+    <div class="section-label">Event Details</div>
+    <div class="form-card events-form-card">
+      <form id="event-form">
+
+        <div class="form-row">
+          <label for="event-name">Event Name *</label>
+          <input type="text" id="event-name" placeholder="e.g. Summer Reading Night" required>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-row" style="margin-bottom:0">
+            <label for="event-date">Date *</label>
+            <input type="date" id="event-date" required>
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label for="event-time">Time *</label>
+            <input type="text" id="event-time" placeholder="e.g. 10:30 or 3pm or dalle 17" required>
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:18px">
+          <label for="event-location">Location *</label>
+          <input type="text" id="event-location" placeholder="e.g. Libreria, Via Roma 12" required>
+        </div>
+
+        <div class="form-row">
+          <label for="event-tagline">Tagline</label>
+          <input type="text" id="event-tagline" placeholder="e.g. An evening of stories and conversation">
+        </div>
+
+        <div class="form-row">
+          <label for="event-details">Additional Details</label>
+          <textarea id="event-details" rows="3" maxlength="300"
+            placeholder="e.g. Free entry · Refreshments provided · All ages welcome"></textarea>
+          <div class="hint">Separate items with · or line breaks. Max 300 characters.</div>
+        </div>
+
+        <div class="form-row">
+          <label for="event-contact">Contact / RSVP</label>
+          <input type="text" id="event-contact" placeholder="e.g. info@libreria.it or +39 02 1234567">
+        </div>
+
+        <div class="form-actions" style="margin-top:20px">
+          <button type="submit" class="btn-primary" id="generate-btn" disabled>
+            Generate Preview
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Poster Preview -->
+    <div class="poster-preview-section" id="poster-preview-wrap" hidden>
+      <div class="section-label">Preview</div>
+      <div class="poster-outer">
+        <div id="poster-preview"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="events.js"></script>
+</body>
+</html>
