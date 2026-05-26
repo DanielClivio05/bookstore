@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookstore — Sales</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav>
+    <span class="nav-brand">📚 Libreria</span>
+    <a href="index.html" class="nav-link">Search</a>
+    <a href="stats.html" class="nav-link">Stats</a>
+    <a href="library.html" class="nav-link">Library</a>
+    <a href="orders.html" class="nav-link">Orders</a>
+    <a href="sales.html" class="nav-link active">Sales</a>
+    <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
+  </nav>
+
+  <div class="page">
+    <div class="page-title">Log a Sale</div>
+
+    <div class="form-card">
+      <form id="sale-form">
+        <input type="hidden" id="book-id">
+
+        <div class="form-row autocomplete-wrap">
+          <label for="title">Book Title *</label>
+          <input type="text" id="title" placeholder="Start typing to search…" autocomplete="off" required>
+          <div id="title-dropdown" class="autocomplete-dropdown" hidden></div>
+        </div>
+
+        <div class="form-row">
+          <label for="author">Author</label>
+          <input type="text" id="author" placeholder="Auto-filled when you select a book">
+        </div>
+
+        <div class="form-row">
+          <label for="quantity_sold">Quantity Sold *</label>
+          <input type="number" id="quantity_sold" placeholder="1" min="1" step="1" required>
+          <div class="field-error" id="quantity-error" hidden></div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-row" style="margin-bottom:0">
+            <label for="cost_price">Cost Price (€)</label>
+            <input type="number" id="cost_price" placeholder="0.00" step="0.01" min="0">
+          </div>
+          <div class="form-row" style="margin-bottom:0">
+            <label for="sale_price">Sale Price (€)</label>
+            <input type="number" id="sale_price" placeholder="0.00" step="0.01" min="0">
+          </div>
+        </div>
+
+        <div class="form-row" style="margin-top:18px">
+          <label for="date_sold">Date Sold *</label>
+          <input type="date" id="date_sold" required>
+        </div>
+
+        <div class="form-row">
+          <label for="notes">Notes</label>
+          <textarea id="notes" rows="3" maxlength="200" placeholder="Optional"></textarea>
+          <div class="hint">Max 200 characters</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="submit-btn">Log Sale</button>
+        </div>
+      </form>
+    </div>
+
+    <section class="history-section">
+      <div class="history-header">
+        <h2 class="section-title">Sales History</h2>
+        <div class="history-totals">
+          <div class="history-total">
+            <span class="history-total-label">Total Units Sold</span>
+            <span class="history-total-value" id="total-units">0</span>
+          </div>
+          <div class="history-total">
+            <span class="history-total-label">Total Revenue</span>
+            <span class="history-total-value" id="total-revenue">€0.00</span>
+          </div>
+          <div class="history-total">
+            <span class="history-total-label">Total Profit</span>
+            <span class="history-total-value" id="total-profit">€0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="history-search" placeholder="Filter by book title…" autocomplete="off">
+      </div>
+
+      <div class="date-range-filter">
+        <label>
+          From
+          <input type="date" id="filter-from">
+        </label>
+        <label>
+          To
+          <input type="date" id="filter-to">
+        </label>
+      </div>
+      <div class="field-error" id="date-range-error" hidden></div>
+
+      <div class="table-wrap history-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date Sold</th>
+              <th>Book Title</th>
+              <th>Author</th>
+              <th>Qty Sold</th>
+              <th>Cost Price</th>
+              <th>Sale Price</th>
+              <th>Profit</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr><td colspan="9"><div class="empty"><div class="empty-icon">📋</div><p>Loading sales…</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="sales.js"></script>
+</body>
+</html>
