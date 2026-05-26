@@ -104,6 +104,7 @@ moreToggleBtn.addEventListener('click', () => {
   const isHidden = moreSection.hidden
   moreSection.hidden = !isHidden
   moreToggleBtn.textContent = isHidden ? '▾ Hide extra templates' : '▸ Show more templates'
+  moreToggleBtn.setAttribute('aria-expanded', String(!isHidden))
 })
 
 // ===== TEMPLATE SELECTION =====
@@ -248,7 +249,7 @@ function parseTimeTo24h(input) {
       return `${String(h).padStart(2, '0')}:00`
   }
 
-  return s
+  return escapeHtml(s)
 }
 
 function parseBullets(text) {

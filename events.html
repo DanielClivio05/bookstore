@@ -37,6 +37,8 @@
       box-shadow: var(--shadow);
       text-align: center;
       user-select: none;
+      font: inherit;
+      width: 100%;
     }
     .template-card:hover { border-color: var(--primary); }
     .template-card.selected {
@@ -739,7 +741,7 @@
     <div class="section-label">Choose a Template</div>
     <div class="template-picker" id="template-picker">
 
-      <div class="template-card" data-template="storybook">
+      <button type="button" class="template-card" data-template="storybook">
         <div class="template-preview tp-storybook">
           <div class="tps-inner">
             <div class="tps-stars">✦ ✦ ✦</div>
@@ -759,9 +761,9 @@
         </div>
         <div class="template-name">Storybook</div>
         <div class="template-desc">Warm &amp; cozy · A4 portrait</div>
-      </div>
+      </button>
 
-      <div class="template-card" data-template="pop">
+      <button type="button" class="template-card" data-template="pop">
         <div class="template-preview tp-pop">
           <div class="tpp-deco">✦<br>✦</div>
           <div class="tpp-brand"></div>
@@ -776,9 +778,9 @@
         </div>
         <div class="template-name">Instagram Pop</div>
         <div class="template-desc">Bold &amp; bright · 1:1 square</div>
-      </div>
+      </button>
 
-      <div class="template-card" data-template="whimsy">
+      <button type="button" class="template-card" data-template="whimsy">
         <div class="template-preview tp-whimsy">
           <div class="tpw-top">
             <div class="tpw-brand"></div>
@@ -795,13 +797,13 @@
         </div>
         <div class="template-name">Modern Whimsy</div>
         <div class="template-desc">Split layout · print &amp; digital</div>
-      </div>
+      </button>
 
     </div>
 
     <!-- More Templates Toggle -->
     <div class="more-toggle-wrap">
-      <button type="button" class="more-toggle-btn" id="more-toggle-btn">
+      <button type="button" class="more-toggle-btn" id="more-toggle-btn" aria-expanded="false" aria-controls="more-templates-section">
         ▸ Show more templates
       </button>
     </div>
@@ -811,7 +813,7 @@
       <div class="section-label">More Options</div>
       <div class="template-picker" id="template-picker-more">
 
-        <div class="template-card" data-template="chalkboard">
+        <button type="button" class="template-card" data-template="chalkboard">
           <div class="template-preview tp-chalkboard">
             <div class="tpch-inner">
               <div class="tpch-brand"></div>
@@ -828,9 +830,9 @@
           </div>
           <div class="template-name">Chalkboard</div>
           <div class="template-desc">Nostalgic · handwritten feel</div>
-        </div>
+        </button>
 
-        <div class="template-card" data-template="pastel">
+        <button type="button" class="template-card" data-template="pastel">
           <div class="template-preview tp-pastel">
             <div class="tppas-brand"></div>
             <div class="tppas-deco">🌸</div>
@@ -846,9 +848,9 @@
           </div>
           <div class="template-name">Pastel Dream</div>
           <div class="template-desc">Soft &amp; dreamy · younger events</div>
-        </div>
+        </button>
 
-        <div class="template-card" data-template="bookmark">
+        <button type="button" class="template-card" data-template="bookmark">
           <div class="template-preview tp-bookmark">
             <div class="tpbk-top">
               <div class="tpbk-deco">✦</div>
@@ -868,7 +870,7 @@
           </div>
           <div class="template-name">Bookmark Strip</div>
           <div class="template-desc">Story format · tall &amp; narrow</div>
-        </div>
+        </button>
 
       </div>
     </div>
