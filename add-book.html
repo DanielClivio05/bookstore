@@ -10,13 +10,17 @@
 
   <nav>
     <span class="nav-brand">📚 Libreria</span>
-    <a href="index.html" class="nav-link">Search</a>
-    <a href="stats.html" class="nav-link">Stats</a>
-    <a href="library.html" class="nav-link">Library</a>
-    <a href="orders.html" class="nav-link">Orders</a>
-    <a href="sales.html" class="nav-link">Sales</a>
-    <a href="events.html" class="nav-link">Events</a>
-    <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true">
+    <label for="nav-toggle" class="nav-burger" aria-label="Toggle menu"><span></span><span></span><span></span></label>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Search</a>
+      <a href="stats.html" class="nav-link">Stats</a>
+      <a href="library.html" class="nav-link">Library</a>
+      <a href="orders.html" class="nav-link">Orders</a>
+      <a href="sales.html" class="nav-link">Sales</a>
+      <a href="events.html" class="nav-link">Events</a>
+      <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
+    </div>
   </nav>
 
   <div class="page">

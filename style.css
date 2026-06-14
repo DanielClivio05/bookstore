@@ -66,6 +66,27 @@ nav {
 }
 .nav-add:hover { opacity: 0.85; }
 
+/* Desktop: links sit in a row on the right; burger is hidden */
+.nav-links { display: flex; align-items: center; gap: 4px; }
+.nav-toggle, .nav-burger { display: none; }
+
+/* Hamburger button (shown on mobile only) */
+.nav-burger {
+  width: 42px; height: 42px;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px; margin-left: 8px; border-radius: 8px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-burger span {
+  display: block; width: 22px; height: 2px;
+  background: #fff; border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+/* Animate the burger into an X when the menu is open */
+.nav-toggle:checked ~ .nav-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle:checked ~ .nav-burger span:nth-child(2) { opacity: 0; }
+.nav-toggle:checked ~ .nav-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
 /* ===== PAGE WRAPPER ===== */
 .page {
   max-width: 960px;
@@ -337,9 +358,33 @@ tbody td { padding: 11px 14px; }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
-  .nav-brand { font-size: 15px; }
-  .nav-link { font-size: 12px; padding: 6px 8px; }
-  .nav-add { padding: 6px 10px; font-size: 12px; }
+  .nav-brand { font-size: 16px; }
+
+  /* Show the hamburger button */
+  .nav-burger { display: flex; }
+
+  /* Collapse the links into a dropdown panel under the nav bar */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: var(--nav-h); left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 4px;
+    background: var(--primary);
+    padding: 8px 12px 14px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .nav-toggle:checked ~ .nav-links { display: flex; }
+
+  .nav-links .nav-link {
+    font-size: 15.5px; padding: 12px 14px; border-radius: 8px;
+    color: rgba(255,255,255,0.85);
+  }
+  .nav-links .nav-add {
+    margin: 6px 0 0; padding: 13px 14px;
+    font-size: 15px; text-align: center; width: 100%;
+  }
+
   .page { padding-left: 14px; padding-right: 14px; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .book-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
