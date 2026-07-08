@@ -18,10 +18,19 @@ const setupNotice        = document.getElementById('setup-notice')
 const formSectionLabel   = document.getElementById('form-section-label')
 const resetFormBtn       = document.getElementById('reset-form-btn')
 const downloadBtn        = document.getElementById('download-btn')
+const photoFileInput     = document.getElementById('photo-file')
+const photoUrlInput      = document.getElementById('photo-url')
+const photoOptions       = document.getElementById('photo-options')
+const photoThumb         = document.getElementById('photo-thumb')
+const photoModeSelect    = document.getElementById('photo-mode')
+const photoStrengthWrap  = document.getElementById('photo-strength-wrap')
+const photoStrengthSel   = document.getElementById('photo-strength')
+const photoRemoveBtn     = document.getElementById('photo-remove')
 
 let selectedTemplate = null
 let selectedColor    = null
 let allEvents        = []
+let posterImage      = null   // data URL (uploaded) or https URL (pasted)
 
 // ===== COLOR PRESETS =====
 
@@ -106,6 +115,121 @@ function liveRerender() {
       renderPoster(data)
     }
   }
+}
+
+// ===== POSTER PHOTO =====
+
+// Downscale an uploaded image to keep the saved event small (max 1400px, JPEG).
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = reject
+    reader.onload = () => {
+      const img = new Image()
+      img.onerror = reject
+      img.onload = () => {
+        const MAX = 1400
+        let { width, height } = img
+        if (width > MAX || height > MAX) {
+          const k = MAX / Math.max(width, height)
+          width = Math.round(width * k)
+          height = Math.round(height * k)
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+        resolve(canvas.toDataURL('image/jpeg', 0.82))
+      }
+      img.src = reader.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+function isSafeImageSrc(src) {
+  return /^(https:\/\/|data:image\/)/i.test(src || '')
+}
+
+function setPosterImage(src) {
+  posterImage = src
+  if (src) {
+    photoThumb.src = src
+    photoOptions.hidden = false
+  } else {
+    photoOptions.hidden = true
+    photoThumb.removeAttribute('src')
+  }
+  updateStrengthVisibility()
+  liveRerender()
+}
+
+function updateStrengthVisibility() {
+  photoStrengthWrap.hidden = photoModeSelect.value !== 'background'
+}
+
+photoFileInput.addEventListener('change', async () => {
+  const file = photoFileInput.files?.[0]
+  if (!file) return
+  try {
+    const dataUrl = await fileToDataUrl(file)
+    photoUrlInput.value = ''
+    setPosterImage(dataUrl)
+    showToast('Photo added!')
+  } catch {
+    showToast('Could not read that image', true)
+  }
+})
+
+photoUrlInput.addEventListener('change', () => {
+  const url = photoUrlInput.value.trim()
+  if (!url) return
+  if (!isSafeImageSrc(url)) {
+    showToast('Image links must start with https://', true)
+    return
+  }
+  photoFileInput.value = ''
+  setPosterImage(url)
+})
+
+photoModeSelect.addEventListener('change', () => { updateStrengthVisibility(); liveRerender() })
+photoStrengthSel.addEventListener('change', liveRerender)
+
+photoRemoveBtn.addEventListener('click', () => {
+  photoFileInput.value = ''
+  photoUrlInput.value = ''
+  setPosterImage(null)
+})
+
+// Applies the chosen photo to the freshly rendered poster.
+function applyPhoto(data) {
+  const node = previewEl.firstElementChild
+  if (!node || !data.image || !isSafeImageSrc(data.image)) return
+  const src = data.image.replace(/"/g, '%22')
+
+  if (data.imageMode === 'photo') {
+    // A framed photo box right under the event title
+    const anchor = node.querySelector('[class*="event-name"]')
+    if (anchor) {
+      anchor.insertAdjacentHTML('afterend',
+        `<div class="poster-photo"><img src="${src}" alt=""></div>`)
+    }
+    return
+  }
+
+  // Background mode: photo behind the text, tinted with the poster's own
+  // background color so the text stays readable.
+  const alpha = { subtle: 0.92, medium: 0.82, strong: 0.65 }[data.imageStrength] ?? 0.82
+  let base = getComputedStyle(node).backgroundColor
+  if (!base || base === 'transparent' || /rgba\(\s*0,\s*0,\s*0,\s*0\s*\)/.test(base)) {
+    base = 'rgb(255, 255, 255)'
+  }
+  const overlay = base.startsWith('rgba')
+    ? base.replace(/,[^,]+\)$/, `, ${alpha})`)
+    : base.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`)
+  node.style.backgroundImage = `linear-gradient(${overlay}, ${overlay}), url("${src}")`
+  node.style.backgroundSize = 'cover'
+  node.style.backgroundPosition = 'center'
 }
 
 // ===== MORE TEMPLATES TOGGLE =====
@@ -209,6 +333,11 @@ function fillForm(ev) {
   if (ev.color) customColorInput.value = ev.color
   updateSwatchSelection()
   if (ev.template) selectTemplate(ev.template)
+  photoFileInput.value = ''
+  photoUrlInput.value = (ev.image_url && !ev.image_url.startsWith('data:')) ? ev.image_url : ''
+  if (ev.image_mode) photoModeSelect.value = ev.image_mode
+  if (ev.image_strength) photoStrengthSel.value = ev.image_strength
+  setPosterImage(ev.image_url || null)
   formSectionLabel.textContent = `Editing: ${ev.name}`
   generateBtn.textContent = 'Save Changes'
   resetFormBtn.hidden = false
@@ -217,6 +346,7 @@ function fillForm(ev) {
 function resetForm() {
   form.reset()
   document.getElementById('event-id').value = ''
+  setPosterImage(null)
   formSectionLabel.textContent = 'New Event'
   generateBtn.textContent = 'Save Event'
   resetFormBtn.hidden = true
@@ -271,6 +401,9 @@ form.addEventListener('submit', async e => {
     contact:  data.contact || null,
     template: selectedTemplate,
     color:    selectedColor,
+    image_url:      posterImage,
+    image_mode:     posterImage ? photoModeSelect.value : null,
+    image_strength: posterImage ? photoStrengthSel.value : null,
   }
 
   generateBtn.disabled = true
@@ -341,6 +474,9 @@ function collectFormData() {
     details   : document.getElementById('event-details').value.trim(),
     contact   : document.getElementById('event-contact').value.trim(),
     color     : selectedColor,
+    image         : posterImage,
+    imageMode     : photoModeSelect.value,
+    imageStrength : photoStrengthSel.value,
   }
 }
 
@@ -470,6 +606,7 @@ function renderPoster(data) {
   if (selectedTemplate === 'chalkboard') previewEl.innerHTML = renderChalkboard(data, bullets)
   if (selectedTemplate === 'pastel')     previewEl.innerHTML = renderPastel(data, bullets)
   if (selectedTemplate === 'bookmark')   previewEl.innerHTML = renderBookmark(data, bullets)
+  applyPhoto(data)
 }
 
 // Converts a style string to a style attribute, or '' if no string.

@@ -356,6 +356,9 @@ tbody td { padding: 11px 14px; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.error { background: var(--danger); }
 
+/* The hidden attribute must always win over display rules */
+[hidden] { display: none !important; }
+
 /* ===== ISBN QUICK-ADD ===== */
 .isbn-lookup-block {
   background: var(--primary-light);
@@ -451,6 +454,37 @@ tbody td { padding: 11px 14px; }
 }
 .poster-actions {
   display: flex; justify-content: center; gap: 10px; margin-top: 18px;
+}
+
+/* ===== POSTER PHOTO ===== */
+.photo-options {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; margin-top: 10px;
+}
+#photo-thumb {
+  width: 64px; height: 64px; object-fit: cover;
+  border-radius: 6px; box-shadow: var(--shadow); flex-shrink: 0;
+  background: var(--primary-light);
+}
+.photo-selects {
+  display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; flex: 1;
+}
+.photo-selects label {
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: 11.5px; font-weight: 600; color: var(--muted);
+  margin-bottom: 0;
+}
+.photo-selects select {
+  padding: 7px 10px; font-size: 13px; font-family: inherit;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  background: var(--surface); outline: none; color: var(--text);
+}
+.poster-photo { margin: 6px 0 14px; text-align: center; }
+.poster-photo img {
+  display: inline-block; width: 82%; max-height: 220px;
+  object-fit: cover; border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
 }
 
 /* ===== RESPONSIVE ===== */

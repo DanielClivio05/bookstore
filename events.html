@@ -958,6 +958,32 @@
           <input type="text" id="event-contact" placeholder="e.g. info@libreria.it or +39 02 1234567">
         </div>
 
+        <div class="form-row">
+          <label for="photo-file">Poster Photo (optional)</label>
+          <input type="file" id="photo-file" accept="image/*">
+          <div class="hint">Add a picture from your computer, or paste an image link below. Uploading works best for downloads.</div>
+          <input type="text" id="photo-url" placeholder="https://… paste an image link instead" style="margin-top:8px">
+          <div class="photo-options" id="photo-options" hidden>
+            <img id="photo-thumb" alt="Photo preview">
+            <div class="photo-selects">
+              <label>Placement
+                <select id="photo-mode">
+                  <option value="background">Background (behind the text)</option>
+                  <option value="photo">Photo box (under the title)</option>
+                </select>
+              </label>
+              <label id="photo-strength-wrap">How visible
+                <select id="photo-strength">
+                  <option value="subtle">Subtle</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="strong">Strong</option>
+                </select>
+              </label>
+              <button type="button" class="btn-icon danger" id="photo-remove">✕ Remove photo</button>
+            </div>
+          </div>
+        </div>
+
         <div class="form-actions" style="margin-top:20px">
           <button type="submit" class="btn-primary" id="generate-btn">
             Save Event
