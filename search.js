@@ -37,12 +37,23 @@ function render() {
     return
   }
 
-  tbody.innerHTML = filtered.map(b => `
+  tbody.innerHTML = filtered.map(b => {
+    const cover = b.cover_url || (b.isbn ? `https://covers.openlibrary.org/b/isbn/${b.isbn}-S.jpg` : null)
+    const thumb = cover
+      ? `<img class="td-thumb" src="${esc(cover)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=\\'td-thumb-fallback\\'>📖</span>'">`
+      : `<span class="td-thumb-fallback">📖</span>`
+    return `
     <tr>
-      <td class="td-title">${esc(b.title)}</td>
+      <td class="td-title"><span class="td-book">${thumb}<span>${esc(b.title)}</span></span></td>
       <td class="td-author">${esc(b.author || '—')}</td>
       <td>${esc(b.age_group || '—')}</td>
-      <td class="td-qty ${b.quantity <= 2 ? 'low' : ''}">${b.quantity}</td>
+      <td>
+        <span class="qty-cell">
+          <button class="qty-btn" onclick="adjustQty('${b.id}', -1)" ${b.quantity <= 0 ? 'disabled' : ''} aria-label="Decrease quantity">−</button>
+          <span class="td-qty ${b.quantity <= 2 ? 'low' : ''}">${b.quantity}</span>
+          <button class="qty-btn" onclick="adjustQty('${b.id}', 1)" aria-label="Increase quantity">+</button>
+        </span>
+      </td>
       <td>€${fmt(b.price_bought)}</td>
       <td>€${fmt(b.price_sold)}</td>
       <td>
@@ -51,8 +62,18 @@ function render() {
           <button class="btn-icon danger" onclick="deleteBook('${b.id}', '${esc(b.title)}')">🗑️</button>
         </div>
       </td>
-    </tr>
-  `).join('')
+    </tr>`
+  }).join('')
+}
+
+window.adjustQty = async (id, delta) => {
+  const book = allBooks.find(b => b.id === id)
+  if (!book) return
+  const newQty = Math.max(0, (book.quantity || 0) + delta)
+  const { error } = await supabase.from('books').update({ quantity: newQty }).eq('id', id)
+  if (error) { showToast('Error updating quantity', true); return }
+  book.quantity = newQty
+  render()
 }
 
 window.editBook = (id) => {

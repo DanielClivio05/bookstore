@@ -1,3 +1,5 @@
+import { supabase } from './supabase.js'
+
 const toast              = document.getElementById('toast')
 const templateCards      = document.querySelectorAll('.template-card')
 const generateBtn        = document.getElementById('generate-btn')
@@ -9,9 +11,17 @@ const moreSection        = document.getElementById('more-templates-section')
 const colorPickerSection = document.getElementById('color-picker-section')
 const colorSwatchesEl    = document.getElementById('color-swatches')
 const customColorInput   = document.getElementById('custom-color-input')
+const upcomingEl         = document.getElementById('upcoming-events')
+const pastEl             = document.getElementById('past-events')
+const pastBlock          = document.getElementById('past-events-block')
+const setupNotice        = document.getElementById('setup-notice')
+const formSectionLabel   = document.getElementById('form-section-label')
+const resetFormBtn       = document.getElementById('reset-form-btn')
+const downloadBtn        = document.getElementById('download-btn')
 
 let selectedTemplate = null
 let selectedColor    = null
+let allEvents        = []
 
 // ===== COLOR PRESETS =====
 
@@ -114,22 +124,212 @@ templateCards.forEach(card => {
     templateCards.forEach(c => c.classList.remove('selected'))
     card.classList.add('selected')
     selectedTemplate = card.dataset.template
-    generateBtn.disabled = false
     colorPickerSection.classList.add('visible')
+    liveRerender()
   })
 })
 
-// ===== FORM SUBMISSION =====
+function selectTemplate(name) {
+  const card = [...templateCards].find(c => c.dataset.template === name)
+  if (!card) return
+  templateCards.forEach(c => c.classList.remove('selected'))
+  card.classList.add('selected')
+  selectedTemplate = name
+  colorPickerSection.classList.add('visible')
+  // Reveal the "more" section if the template lives there
+  if (card.closest('#more-templates-section') && moreSection.hidden) {
+    moreToggleBtn.click()
+  }
+}
 
-form.addEventListener('submit', e => {
+// ===== EVENTS: LOAD / LIST =====
+
+async function loadEvents() {
+  const { data, error } = await supabase.from('events').select('*').order('date', { ascending: true })
+  if (error) {
+    if (/does not exist|42P01|schema cache/i.test(error.message || '')) {
+      setupNotice.hidden = false
+      upcomingEl.innerHTML = `<div class="empty" style="padding:24px"><p>Run the one-time setup above to start saving events.</p></div>`
+    } else {
+      showToast('Error loading events', true)
+    }
+    return
+  }
+  allEvents = data || []
+  renderEventList()
+}
+
+function renderEventList() {
+  const today = new Date().toISOString().slice(0, 10)
+  const upcoming = allEvents.filter(ev => ev.date >= today)
+  const past     = allEvents.filter(ev => ev.date < today).reverse()
+
+  upcomingEl.innerHTML = upcoming.length
+    ? upcoming.map(ev => eventCard(ev)).join('')
+    : `<div class="empty" style="padding:24px"><div class="empty-icon">📅</div><p>No upcoming events — create one below</p></div>`
+
+  pastBlock.hidden = past.length === 0
+  pastEl.innerHTML = past.map(ev => eventCard(ev, true)).join('')
+}
+
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+function eventCard(ev, isPast = false) {
+  const e = escapeHtml
+  const [y, m, d] = ev.date.split('-')
+  const meta = [ev.time ? parseTimeTo24h(ev.time) : null, ev.location].filter(Boolean).join(' · ')
+  return `
+    <div class="event-card${isPast ? ' past' : ''}">
+      <div class="event-card-date">
+        <span class="event-card-day">${parseInt(d, 10)}</span>
+        <span class="event-card-month">${MONTHS_SHORT[parseInt(m, 10) - 1]} ${y.slice(2)}</span>
+      </div>
+      <div class="event-card-info">
+        <div class="event-card-name">${e(ev.name)}</div>
+        <div class="event-card-meta">${e(meta)}</div>
+      </div>
+      <div class="event-card-actions">
+        <button class="btn-icon" onclick="posterEvent('${ev.id}')" title="Make poster">🖼️ Poster</button>
+        <button class="btn-icon" onclick="editEvent('${ev.id}')" title="Edit">✏️</button>
+        <button class="btn-icon danger" onclick="deleteEvent('${ev.id}')" title="Delete">🗑️</button>
+      </div>
+    </div>`
+}
+
+function fillForm(ev) {
+  document.getElementById('event-id').value       = ev.id
+  document.getElementById('event-name').value     = ev.name || ''
+  document.getElementById('event-date').value     = ev.date || ''
+  document.getElementById('event-time').value     = ev.time || ''
+  document.getElementById('event-location').value = ev.location || ''
+  document.getElementById('event-tagline').value  = ev.tagline || ''
+  document.getElementById('event-details').value  = ev.details || ''
+  document.getElementById('event-contact').value  = ev.contact || ''
+  selectedColor = ev.color || null
+  if (ev.color) customColorInput.value = ev.color
+  updateSwatchSelection()
+  if (ev.template) selectTemplate(ev.template)
+  formSectionLabel.textContent = `Editing: ${ev.name}`
+  generateBtn.textContent = 'Save Changes'
+  resetFormBtn.hidden = false
+}
+
+function resetForm() {
+  form.reset()
+  document.getElementById('event-id').value = ''
+  formSectionLabel.textContent = 'New Event'
+  generateBtn.textContent = 'Save Event'
+  resetFormBtn.hidden = true
+  previewWrap.hidden = true
+}
+
+resetFormBtn.addEventListener('click', resetForm)
+
+window.editEvent = (id) => {
+  const ev = allEvents.find(x => x.id === id)
+  if (!ev) return
+  fillForm(ev)
+  form.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+window.posterEvent = (id) => {
+  const ev = allEvents.find(x => x.id === id)
+  if (!ev) return
+  fillForm(ev)
+  if (!selectedTemplate) selectTemplate(ev.template || 'storybook')
+  renderPoster(collectFormData())
+  previewWrap.hidden = false
+  previewWrap.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+window.deleteEvent = async (id) => {
+  const ev = allEvents.find(x => x.id === id)
+  if (!ev) return
+  if (!confirm(`Delete "${ev.name}"? This cannot be undone.`)) return
+  const { error } = await supabase.from('events').delete().eq('id', id)
+  if (error) { showToast('Error deleting event', true); return }
+  showToast(`"${ev.name}" deleted`)
+  if (document.getElementById('event-id').value === id) resetForm()
+  loadEvents()
+}
+
+// ===== FORM SUBMISSION (SAVE + PREVIEW) =====
+
+form.addEventListener('submit', async e => {
   e.preventDefault()
   const data = collectFormData()
   if (!validateForm(data)) return
-  renderPoster(data)
-  previewWrap.hidden = false
-  previewWrap.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  showToast('Preview generated!')
+
+  const editingId = document.getElementById('event-id').value
+  const payload = {
+    name:     data.eventName,
+    date:     data.date,
+    time:     data.time,
+    location: data.location,
+    tagline:  data.tagline || null,
+    details:  data.details || null,
+    contact:  data.contact || null,
+    template: selectedTemplate,
+    color:    selectedColor,
+  }
+
+  generateBtn.disabled = true
+  let error
+  if (editingId) {
+    ;({ error } = await supabase.from('events').update(payload).eq('id', editingId))
+  } else {
+    ;({ error } = await supabase.from('events').insert([payload]))
+  }
+  generateBtn.disabled = false
+
+  if (error) {
+    if (/does not exist|42P01|schema cache/i.test(error.message || '')) {
+      setupNotice.hidden = false
+      setupNotice.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      showToast('Events table missing — see setup note at top', true)
+    } else {
+      showToast('Error saving event', true)
+    }
+    return
+  }
+
+  showToast(editingId ? 'Event updated!' : 'Event saved!')
+  if (!editingId) resetForm()
+  loadEvents()
+
+  if (selectedTemplate) {
+    renderPoster(data)
+    previewWrap.hidden = false
+    previewWrap.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 })
+
+// ===== POSTER DOWNLOAD =====
+
+downloadBtn.addEventListener('click', async () => {
+  const posterNode = previewEl.firstElementChild
+  if (!posterNode) { showToast('Generate a poster first', true); return }
+  downloadBtn.disabled = true
+  downloadBtn.textContent = 'Rendering…'
+  try {
+    const canvas = await html2canvas(posterNode, {
+      scale: 3, useCORS: true, backgroundColor: null, logging: false,
+    })
+    const name = document.getElementById('event-name').value.trim() || 'event'
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    const a = document.createElement('a')
+    a.download = `${slug}-poster.png`
+    a.href = canvas.toDataURL('image/png')
+    a.click()
+    showToast('Poster downloaded!')
+  } catch {
+    showToast('Could not render the poster image', true)
+  }
+  downloadBtn.disabled = false
+  downloadBtn.textContent = '⬇ Download PNG'
+})
+
+loadEvents()
 
 function collectFormData() {
   return {

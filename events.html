@@ -741,6 +741,26 @@
   <div class="page">
     <div class="page-title">Events</div>
 
+    <!-- Setup notice (shown only if the events table is missing) -->
+    <div class="setup-notice" id="setup-notice" hidden>
+      ⚠️ The events database table doesn't exist yet. One-time setup: open your
+      Supabase dashboard → <strong>SQL Editor</strong>, paste the contents of
+      <code>events-table.sql</code> (in this project folder) and click <strong>Run</strong>.
+      Then reload this page.
+    </div>
+
+    <!-- SECTION 0: Saved Events -->
+    <div class="events-list-section">
+      <div class="section-label">Upcoming Events</div>
+      <div class="event-cards" id="upcoming-events">
+        <div class="empty" style="padding:24px"><p>Loading events…</p></div>
+      </div>
+      <div id="past-events-block" hidden>
+        <div class="section-label" style="margin-top:24px">Past Events</div>
+        <div class="event-cards" id="past-events"></div>
+      </div>
+    </div>
+
     <!-- SECTION 1: Template Picker -->
     <div class="section-label">Choose a Template</div>
     <div class="template-picker" id="template-picker">
@@ -895,9 +915,10 @@
     </div>
 
     <!-- SECTION 2: Event Details Form -->
-    <div class="section-label">Event Details</div>
+    <div class="section-label" id="form-section-label">New Event</div>
     <div class="form-card events-form-card">
       <form id="event-form">
+        <input type="hidden" id="event-id">
 
         <div class="form-row">
           <label for="event-name">Event Name *</label>
@@ -938,9 +959,15 @@
         </div>
 
         <div class="form-actions" style="margin-top:20px">
-          <button type="submit" class="btn-primary" id="generate-btn" disabled>
-            Generate Preview
+          <button type="submit" class="btn-primary" id="generate-btn">
+            Save Event
           </button>
+          <button type="button" class="btn-secondary" id="reset-form-btn" hidden>
+            Cancel Edit
+          </button>
+        </div>
+        <div class="hint" style="margin-top:10px">
+          Pick a template above to also generate a poster — it's saved with the event.
         </div>
 
       </form>
@@ -948,15 +975,19 @@
 
     <!-- Poster Preview -->
     <div class="poster-preview-section" id="poster-preview-wrap" hidden>
-      <div class="section-label">Preview</div>
+      <div class="section-label">Poster Preview</div>
       <div class="poster-outer">
         <div id="poster-preview"></div>
+      </div>
+      <div class="poster-actions">
+        <button type="button" class="btn-primary" id="download-btn">⬇ Download PNG</button>
       </div>
     </div>
 
   </div>
 
   <div class="toast" id="toast"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script type="module" src="events.js"></script>
 </body>
 </html>

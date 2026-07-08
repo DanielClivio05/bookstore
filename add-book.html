@@ -30,6 +30,32 @@
       <form id="book-form">
         <input type="hidden" id="book-id">
 
+        <div class="isbn-lookup-block">
+          <div class="form-row" style="margin-bottom:10px">
+            <label for="isbn">ISBN — start here</label>
+            <div class="isbn-row">
+              <input type="text" id="isbn" placeholder="Type or scan ISBN, e.g. 9780156012195" inputmode="numeric" autocomplete="off" autofocus>
+              <button type="button" class="btn-secondary isbn-lookup-btn" id="lookup-btn">Look up</button>
+            </div>
+            <div class="hint">Title, author and cover are fetched automatically. Fills in as soon as a full ISBN is entered.</div>
+          </div>
+          <div class="isbn-status" id="isbn-status" hidden></div>
+          <div class="dup-warning" id="dup-warning" hidden>
+            <span id="dup-warning-text"></span>
+            <span class="dup-actions">
+              <button type="button" class="btn-icon" id="dup-add-stock">+1 copy</button>
+              <button type="button" class="btn-icon" id="dup-edit">Edit existing</button>
+            </span>
+          </div>
+          <div class="lookup-result" id="lookup-result" hidden>
+            <img id="cover-preview" alt="Book cover" onerror="this.hidden = true">
+            <div class="lookup-result-info">
+              <span class="lookup-result-title" id="lookup-title"></span>
+              <span class="lookup-result-author" id="lookup-author"></span>
+            </div>
+          </div>
+        </div>
+
         <div class="form-row">
           <label for="title">Book Title *</label>
           <input type="text" id="title" placeholder="e.g. The Little Prince" required>
@@ -38,12 +64,6 @@
         <div class="form-row">
           <label for="author">Author</label>
           <input type="text" id="author" placeholder="e.g. Antoine de Saint-Exupéry">
-        </div>
-
-        <div class="form-row">
-          <label for="isbn">ISBN</label>
-          <input type="text" id="isbn" placeholder="e.g. 9780156012195">
-          <div class="hint">Used to automatically fetch the book cover image</div>
         </div>
 
         <div class="form-row">
