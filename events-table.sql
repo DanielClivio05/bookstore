@@ -1,28 +1,13 @@
--- One-time setup for the Events page.
--- Run this in Supabase: Dashboard → SQL Editor → New query → paste → Run.
--- Safe to run again later: it only adds what's missing.
-
-create table if not exists events (
-  id             uuid primary key default gen_random_uuid(),
-  name           text not null,
-  date           date not null,
-  time           text,
-  location       text,
-  tagline        text,
-  details        text,
-  contact        text,
-  template       text,
-  color          text,
-  created_at     timestamptz default now()
-);
-
--- Photo support (added later — these upgrade an existing table too)
-alter table events add column if not exists image_url text;
-alter table events add column if not exists image_mode text;
-alter table events add column if not exists image_strength text;
-
-alter table events enable row level security;
-
-drop policy if exists "events anon access" on events;
-create policy "events anon access" on events
-  for all using (true) with check (true);
+-- SUPERSEDED — do not run this file.
+--
+-- This used to create the events table with the policy:
+--     for all using (true) with check (true)
+-- which let anyone holding the public anon key read, edit and delete events.
+--
+-- Use security.sql instead. It adds the published / signup_url / age_range
+-- columns and replaces the open policies with:
+--     public  -> may read published events only
+--     admin   -> signed in, may do everything
+--
+-- Kept as an empty stub so nobody runs the old version by accident.
+-- Safe to delete once you're happy the new policies are working.

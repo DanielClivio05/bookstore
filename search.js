@@ -1,3 +1,6 @@
+import { requireAuth } from './auth.js'
+await requireAuth()
+
 import { supabase } from './supabase.js'
 
 const tbody = document.getElementById('results')

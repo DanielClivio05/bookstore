@@ -1,3 +1,6 @@
+import { requireAuth } from './auth.js'
+await requireAuth()
+
 import { supabase } from './supabase.js'
 
 const AGE_GROUPS = ['Children (0–5)', 'Children (6–12)', 'Young Adult', 'Adult']

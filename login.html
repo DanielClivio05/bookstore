@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Nook Lane — Sign in</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-body">
+
+  <main class="login-wrap">
+    <div class="login-card">
+      <div class="login-brand">📚 Book Nook Lane</div>
+      <h1 class="login-title">Sign in</h1>
+      <p class="login-sub">This is the shop's private admin. Ask Daniel if you need access.</p>
+
+      <form id="login-form" novalidate>
+        <div class="form-row">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" autocomplete="username" required>
+        </div>
+
+        <div class="form-row">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" autocomplete="current-password" required>
+        </div>
+
+        <div class="login-error" id="login-error" hidden role="alert"></div>
+
+        <button type="submit" class="btn-primary login-submit" id="login-btn">Sign in</button>
+      </form>
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script type="module" src="login.js"></script>
+</body>
+</html>
