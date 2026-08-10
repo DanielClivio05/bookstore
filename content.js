@@ -31,20 +31,21 @@ const GROUPS = [
     title: 'Tongue twisters',
     sub: 'Three short lines. They show as playful cards on the site.',
     items: [
-      { key: 'twister_1', label: 'Tongue twister 1', type: 'text', bilingual: true },
-      { key: 'twister_2', label: 'Tongue twister 2', type: 'text', bilingual: true },
-      { key: 'twister_3', label: 'Tongue twister 3', type: 'text', bilingual: true },
+      { key: 'twister_1', label: 'Tongue twister 1', type: 'textarea', rows: 2, bilingual: true },
+      { key: 'twister_2', label: 'Tongue twister 2', type: 'textarea', rows: 2, bilingual: true },
+      { key: 'twister_3', label: 'Tongue twister 3', type: 'textarea', rows: 2, bilingual: true },
     ],
   },
   {
     title: 'Find us',
     sub: 'Shown at the bottom of the page.',
     items: [
-      { key: 'visit_address', label: 'Address', type: 'text', bilingual: false,
-        hint: 'e.g. Corso XXV Aprile 44, 21026 Gavirate (VA)' },
-      { key: 'visit_hours',   label: 'Opening hours', type: 'text', bilingual: true,
-        hint: 'e.g. Tue–Sat 9:30–12:30 · 15:30–19:00' },
-      { key: 'visit_contact', label: 'Phone or email shown on the page', type: 'text', bilingual: false },
+      { key: 'visit_address', label: 'Address', type: 'textarea', rows: 2, bilingual: false,
+        hint: 'Corso XXV Aprile 44 ⏎ 21026 Gavirate (VA)' },
+      { key: 'visit_hours',   label: 'Opening hours', type: 'textarea', rows: 4, bilingual: true,
+        hint: 'One day per line — press Enter for a new line. Monday: 15:00 – 19:00 ⏎ Tuesday: 9:30 – 12:30 …' },
+      { key: 'visit_contact', label: 'Phone or email shown on the page', type: 'textarea', rows: 2, bilingual: false,
+        hint: 'Put the phone number and the email on separate lines if you like.' },
     ],
   },
   {
@@ -130,8 +131,13 @@ function buildInput (item, lang) {
     ? document.createElement('textarea')
     : document.createElement('input')
 
-  if (item.type === 'textarea') input.rows = 4
-  else input.type = item.type
+  if (item.type === 'textarea') {
+    input.rows = item.rows || 4
+    // Grow with the text so there's never a hidden scrollbar to fight.
+    input.addEventListener('input', () => autoGrow(input))
+  } else {
+    input.type = item.type
+  }
 
   input.id = id
   input.dataset.key = item.key
@@ -171,8 +177,16 @@ async function load () {
     }
   }
 
+  document.querySelectorAll('#groups textarea').forEach(autoGrow)
+
   updateNote()
   form.addEventListener('input', updateNote)
+}
+
+// Textareas start at their `rows` height and expand to fit whatever she pastes in.
+function autoGrow (el) {
+  el.style.height = 'auto'
+  el.style.height = Math.max(el.scrollHeight, el.rows * 22) + 'px'
 }
 
 function changedKeys () {
