@@ -114,8 +114,12 @@
   .twisters{margin-top:64px}
   .tw-title{font-family:'Caveat',cursive;font-weight:700;color:var(--slate);font-size:clamp(1.7rem,3.4vw,2.2rem);margin:0}
   .tw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
-  .card{border-radius:var(--radius);padding:26px 24px;border:1px solid rgba(16,16,16,.06);transition:transform .16s}
-  .card:hover{transform:translateY(-3px)}
+  .card{border-radius:var(--radius);padding:26px 24px;border:1px solid rgba(16,16,16,.06);
+        transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s}
+  /* Alternating tilt — the cards lean away from each other, like books on a shelf */
+  .card:hover{transform:translateY(-6px) rotate(-.8deg);box-shadow:0 16px 32px rgba(16,16,16,.09)}
+  .c2:hover{transform:translateY(-6px) rotate(.8deg)}
+  .c3:hover{transform:translateY(-6px) rotate(-.5deg)}
   .c1{background:#EFF3F7} .c2{background:#F2F6EF} .c3{background:#FBF2E1}
   .card .num{font-family:'Zilla Slab';font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin:0}
   .card p.tw{font-family:'Zilla Slab';font-weight:500;font-size:1.14rem;line-height:1.4;margin:10px 0 0;min-height:1.4em;white-space:pre-line}
@@ -123,10 +127,52 @@
 
   /* VISIT */
   .visit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
-  .info{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px 24px;box-shadow:0 6px 20px rgba(16,16,16,.04)}
-  .info h3{font-size:1.02rem;margin-bottom:10px;color:var(--slate-deep)}
+  .info{
+    position:relative;overflow:hidden;
+    background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 24px;box-shadow:0 6px 20px rgba(16,16,16,.04);
+    transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s,border-color .2s;
+  }
+  /* A colour bar wipes across the top on hover — one accent per card */
+  .info::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--accent);
+    transform:scaleX(0);transform-origin:left;
+    transition:transform .32s cubic-bezier(.2,.8,.3,1);
+  }
+  .info:hover::before{transform:scaleX(1)}
+  .info:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 16px 34px rgba(16,16,16,.10)}
+  .info:nth-child(1){--accent:var(--coral)}
+  .info:nth-child(2){--accent:var(--sage)}
+  .info:nth-child(3){--accent:var(--gold)}
+  .info h3{font-size:1.02rem;margin-bottom:12px;color:var(--slate-deep)}
   .info p{margin:0;color:var(--ink-soft);font-size:.97rem;white-space:pre-line}
   .info p.blank{color:#A9A296;font-style:italic}
+
+  /* OPENING HOURS TABLE */
+  .hours{display:flex;flex-direction:column;gap:1px}
+  .hrow{
+    display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;
+    padding:7px 9px;border-radius:9px;transition:background .16s;
+  }
+  .hrow + .hrow{border-top:1px solid #F1ECE3}
+  .hrow .day{
+    font-family:'Zilla Slab';font-weight:600;font-size:.94rem;color:var(--ink);
+    white-space:nowrap;display:flex;align-items:center;gap:7px;
+  }
+  /* Each shift sits on its own line, so a split day can never wrap mid-time */
+  .hrow .times{
+    display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+    color:var(--ink-soft);font-size:.93rem;font-variant-numeric:tabular-nums;
+  }
+  .hrow .times b{font-weight:600;white-space:nowrap}
+  .hrow.closed .times{color:#B3ABA0;font-style:italic}
+  .hrow.today{background:var(--page)}
+  .hrow.today .day{color:var(--coral-deep)}
+  .hrow.today .times b{color:var(--ink)}
+  .chip{
+    font-family:'Nunito';font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--coral);color:#fff;border-radius:999px;padding:2px 7px;line-height:1.5;
+  }
 
   /* FOOTER */
   footer{padding:56px 0 64px;text-align:center;border-top:1px solid var(--line)}
@@ -229,9 +275,9 @@
     <p class="eyebrow" data-it="Passa a trovarci">Come say hello</p>
     <h2 data-it="Dove siamo">Find us</h2>
     <div class="visit-grid">
-      <div class="info"><h3 data-it="Indirizzo">Address</h3><p id="visit-address"></p></div>
-      <div class="info"><h3 data-it="Orari">Opening hours</h3><p id="visit-hours"></p></div>
-      <div class="info"><h3 data-it="Contatti">Get in touch</h3><p id="visit-contact"></p></div>
+      <div class="info"><h3 data-it="📍 Indirizzo">📍 Address</h3><p id="visit-address"></p></div>
+      <div class="info"><h3 data-it="🕰️ Orari">🕰️ Opening hours</h3><div class="hours" id="visit-hours"></div></div>
+      <div class="info"><h3 data-it="💌 Scrivici">💌 Get in touch</h3><p id="visit-contact"></p></div>
     </div>
   </div>
 </section>
@@ -270,6 +316,7 @@ const T = {
   failed:  {en:'Could not load events right now.',
             it:'Impossibile caricare gli eventi in questo momento.'},
   signup:  {en:'Sign up',                   it:'Iscriviti'},
+  today:   {en:'Today',                     it:'Oggi'},
   soon:    {en:'Coming soon.',              it:'Presto disponibile.'}
 };
 
@@ -333,6 +380,76 @@ function renderEvents(){
   }).join('');
 }
 
+/* ---- Opening hours -------------------------------------------------------
+   She types free text, one day per line, e.g.
+     Monday: 15:00 - 19:00
+     Tues - Saturday: 9:00 - 12:30 | 15:00 - 19:00
+     Sunday: Closed.
+   We split each line at the FIRST colon (times contain colons too), then split
+   the times on | so each shift gets its own line and can never wrap mid-time. */
+
+const DAY_TOKENS = {
+  0:['sun','sunday','dom','domenica'],
+  1:['mon','monday','lun','lunedi'],
+  2:['tue','tues','tuesday','mar','martedi'],
+  3:['wed','weds','wednesday','mer','mercoledi'],
+  4:['thu','thur','thurs','thursday','gio','giovedi'],
+  5:['fri','friday','ven','venerdi'],
+  6:['sat','saturday','sab','sabato'],
+};
+
+// Which weekdays does a label like "Tues - Saturday" cover? [] when unsure —
+// we'd rather show no Today badge than put it on the wrong row.
+function dayIndices(label){
+  const words = label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                     .split(/[^a-z]+/).filter(Boolean);
+  const hits = [];
+  for(const w of words){
+    for(const idx of Object.keys(DAY_TOKENS)){
+      if(DAY_TOKENS[idx].includes(w)){ hits.push(+idx); break; }
+    }
+  }
+  if(hits.length === 1) return hits;
+  if(hits.length === 2){                       // a range, e.g. Tue–Sat
+    const [a,b] = hits, out = [];
+    for(let d = a, i = 0; i < 7; i++, d = (d+1) % 7){ out.push(d); if(d === b) break; }
+    return out;
+  }
+  return hits.length > 2 ? hits : [];
+}
+
+function renderHours(txt){
+  const el = document.getElementById('visit-hours');
+  el.innerHTML = '';
+
+  if(!txt){
+    el.innerHTML = `<p class="blank">${esc(T.soon[lang])}</p>`;
+    return;
+  }
+
+  const today = new Date().getDay();
+
+  txt.split('\n').map(l => l.trim()).filter(Boolean).forEach(line => {
+    const at    = line.indexOf(':');
+    const day   = at > -1 ? line.slice(0, at).trim() : line;
+    const times = at > -1 ? line.slice(at + 1).trim() : '';
+    const isToday = dayIndices(day).includes(today);
+    const closed  = /closed|chius/i.test(times || day);
+    const shifts  = times.split(/[|·;]/).map(s => s.trim()).filter(Boolean);
+
+    const row = document.createElement('div');
+    row.className = 'hrow' + (isToday ? ' today' : '') + (closed ? ' closed' : '');
+    row.innerHTML =
+      `<span class="day">${esc(day)}` +
+        (isToday ? `<span class="chip">${esc(T.today[lang])}</span>` : '') +
+      `</span>` +
+      `<span class="times">${
+        shifts.length ? shifts.map(s => `<b>${esc(s)}</b>`).join('') : esc(times)
+      }</span>`;
+    el.appendChild(row);
+  });
+}
+
 function renderContent(){
   [1,2].forEach(n => {
     const txt = pick('about_col_' + n);
@@ -350,13 +467,15 @@ function renderContent(){
     el.classList.toggle('blank', !txt);
   });
 
-  [['visit_address','visit-address'],['visit_hours','visit-hours'],['visit_contact','visit-contact']]
+  [['visit_address','visit-address'],['visit_contact','visit-contact']]
     .forEach(([key, id]) => {
       const txt = pick(key);
       const el  = document.getElementById(id);
       el.textContent = txt || T.soon[lang];
       el.classList.toggle('blank', !txt);
     });
+
+  renderHours(pick('visit_hours'));
 
   [['social_instagram','s-instagram'],['social_facebook','s-facebook']].forEach(([key,id]) => {
     const url = pick(key);
