@@ -1,0 +1,65 @@
+/* Shared styling for the privacy policy and terms pages.
+   Deliberately plainer than the main site — these are documents, not marketing. */
+
+:root{
+  --ink:#101010;
+  --ink-soft:#5A5A5A;
+  --slate:#5B7189;
+  --slate-deep:#546681;
+  --coral:#D06756;
+  --page:#F3EBDC;
+  --bg:#FFFFFF;
+  --bg-warm:#FAF7F1;
+  --line:#E6E0D6;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Nunito',system-ui,sans-serif;font-size:17px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Zilla Slab',Georgia,serif;font-weight:700;line-height:1.2;margin:0;letter-spacing:-.01em}
+a{color:var(--slate-deep)}
+.wrap{width:min(760px,90vw);margin:0 auto}
+
+nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0}
+.brand{font-family:'Zilla Slab',Georgia,serif;font-weight:700;font-size:1.05rem;text-decoration:none;color:var(--ink)}
+.lang{display:flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;font-family:'Zilla Slab',Georgia,serif;font-size:.78rem;font-weight:600}
+.lang button{border:0;background:transparent;padding:5px 12px;cursor:pointer;font:inherit;color:var(--ink-soft)}
+.lang button.on{background:var(--slate);color:#fff}
+
+header.doc{padding:54px 0 12px}
+header.doc h1{font-size:clamp(2rem,4.6vw,2.7rem)}
+.updated{color:var(--ink-soft);font-size:.9rem;margin-top:10px}
+.shelf{height:6px;display:flex;width:min(760px,90vw);margin:26px auto 0;border-radius:4px;overflow:hidden}
+.shelf i{flex:1}
+.shelf i:nth-child(1){background:#5B7189}.shelf i:nth-child(2){background:#8EAD84}
+.shelf i:nth-child(3){background:#DDAE54}.shelf i:nth-child(4){background:#D06756}
+
+main{padding:34px 0 70px}
+h2{font-size:1.35rem;margin:38px 0 10px}
+h3{font-size:1.05rem;margin:24px 0 6px}
+p,li{color:#2C2C2C}
+p{margin:0 0 14px}
+ul{margin:0 0 16px;padding-left:22px}
+li{margin-bottom:7px}
+.lede{font-size:1.06rem;color:var(--ink-soft)}
+
+.callout{
+  background:var(--bg-warm);border:1px solid var(--line);border-left:5px solid var(--slate);
+  border-radius:var(--radius);padding:18px 20px;margin:22px 0;
+}
+.callout p:last-child{margin-bottom:0}
+.callout.warn{border-left-color:var(--coral);background:#FDF3F0}
+
+table{width:100%;border-collapse:collapse;margin:8px 0 20px;font-size:.95rem}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:'Zilla Slab',Georgia,serif;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft)}
+
+footer{padding:34px 0 60px;border-top:1px solid var(--line);text-align:center;color:var(--ink-soft);font-size:.9rem}
+footer a{margin:0 10px}
+
+[data-lang]{display:none}
+[data-lang].on{display:block}

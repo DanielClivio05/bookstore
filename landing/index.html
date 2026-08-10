@@ -186,6 +186,10 @@
   .socials a:hover{border-color:var(--slate);transform:translateY(-2px)}
   .socials a[hidden]{display:none}
   .socials svg{width:19px;height:19px}
+  .legal{margin-top:26px;font-size:.85rem;color:#918B82}
+  .legal a{color:#7A8697;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .16s,color .16s}
+  .legal a:hover{color:var(--slate-deep);border-color:var(--gold)}
+  .legal span{margin:0 8px;color:var(--line)}
 
   @media (max-width:860px){
     .about-grid{grid-template-columns:1fr;gap:36px}
@@ -300,6 +304,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="#5B7189" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>
       </a>
     </div>
+    <p class="legal">
+      <a href="privacy.html" data-it="Privacy">Privacy Policy</a>
+      <span aria-hidden="true">·</span>
+      <a href="terms.html" data-it="Termini e condizioni">Terms &amp; Conditions</a>
+    </p>
   </div>
 </footer>
 
