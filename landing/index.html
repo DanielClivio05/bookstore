@@ -141,10 +141,13 @@
   }
   .info:hover::before{transform:scaleX(1)}
   .info:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 16px 34px rgba(16,16,16,.10)}
-  .info:nth-child(1){--accent:var(--coral)}
-  .info:nth-child(2){--accent:var(--sage)}
-  .info:nth-child(3){--accent:var(--gold)}
+  .info:nth-child(1){--accent:var(--coral);--emoji:'📍'}
+  .info:nth-child(2){--accent:var(--sage); --emoji:'🕰️'}
+  .info:nth-child(3){--accent:var(--gold); --emoji:'💌'}
   .info h3{font-size:1.02rem;margin-bottom:12px;color:var(--slate-deep)}
+  /* Emoji lives in CSS, not the heading text — the EN/IT swap rewrites
+     textContent, which would otherwise eat it when the language changes. */
+  .info h3::before{content:var(--emoji);margin-right:9px;font-size:1.05em}
   .info p{margin:0;color:var(--ink-soft);font-size:.97rem;white-space:pre-line}
   .info p.blank{color:#A9A296;font-style:italic}
 
@@ -275,9 +278,9 @@
     <p class="eyebrow" data-it="Passa a trovarci">Come say hello</p>
     <h2 data-it="Dove siamo">Find us</h2>
     <div class="visit-grid">
-      <div class="info"><h3 data-it="📍 Indirizzo">📍 Address</h3><p id="visit-address"></p></div>
-      <div class="info"><h3 data-it="🕰️ Orari">🕰️ Opening hours</h3><div class="hours" id="visit-hours"></div></div>
-      <div class="info"><h3 data-it="💌 Scrivici">💌 Get in touch</h3><p id="visit-contact"></p></div>
+      <div class="info"><h3 data-it="Indirizzo">Address</h3><p id="visit-address"></p></div>
+      <div class="info"><h3 data-it="Orari">Opening hours</h3><div class="hours" id="visit-hours"></div></div>
+      <div class="info"><h3 data-it="Scrivici">Get in touch</h3><p id="visit-contact"></p></div>
     </div>
   </div>
 </section>
