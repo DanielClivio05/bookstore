@@ -52,7 +52,7 @@ c.setTitle("Book Nook Lane — Opening hours")
 # ---- Logo ----------------------------------------------------------------
 logo = ImageReader("../landing/logo.png")
 lw, lh = logo.getSize()
-tw = 44*mm
+tw = 40*mm
 top = H - 18*mm
 c.drawImage(logo, (W-tw)/2, top - tw*lh/lw, width=tw, height=tw*lh/lw,
             mask='auto', preserveAspectRatio=True)
@@ -78,9 +78,12 @@ area_top = y - 11*mm
 # beneath it. That includes "Closed / Chiuso", which used to be jammed onto
 # one line and broke the pattern everywhere else on the page.
 L, R = 26*mm, W - 26*mm
-GAP = 6*mm
-def row_height(times): return 16*mm + (len(times)-1) * 9.5*mm
-block = sum(row_height(t) + GAP for _, _, t, _ in ROWS) - GAP
+GAP = 5*mm
+# A closed row is a filled panel, so it needs padding the open rows don't —
+# without it the panel edge crops the descenders on "Domenica" and "Chiuso".
+def row_height(times, closed=False):
+    return 15*mm + (len(times)-1) * 9.5*mm + (7*mm if closed else 0)
+block = sum(row_height(t, ci is not None) + GAP for _, _, t, ci in ROWS) - GAP
 area_bottom = 130*mm
 available = area_top - area_bottom
 assert block <= available, (
@@ -90,11 +93,11 @@ y = min((area_top + area_bottom)/2 + block/2, area_top)
 
 for en, it, times, closed_it in ROWS:
     closed = closed_it is not None
-    row_h = row_height(times)
+    row_h = row_height(times, closed)
 
     if closed:
         c.setFillColor(PAGE)
-        c.roundRect(L-7*mm, y - row_h + 7*mm, (R-L)+14*mm, row_h + 3*mm, 5*mm, stroke=0, fill=1)
+        c.roundRect(L-7*mm, y - row_h + 6*mm, (R-L)+14*mm, row_h + 4*mm, 6*mm, stroke=0, fill=1)
 
     # left column
     c.setFillColor(MUTED if closed else INK); c.setFont("Book-Bold", 23)
