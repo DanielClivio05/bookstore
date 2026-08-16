@@ -190,6 +190,122 @@
   .legal a:hover{color:var(--slate-deep);border-color:var(--gold)}
   .legal span{margin:0 8px;color:var(--line)}
 
+  /* EVENT CARD — price, places left, button states */
+  .ev-side{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+  .ev-price{font-family:'Zilla Slab';font-weight:600;font-size:1.05rem;color:var(--ink);white-space:nowrap}
+  .ev-left{font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;color:var(--ink-soft)}
+  .ev-left.low{color:var(--coral-deep)}
+  .pill{
+    display:inline-block;white-space:nowrap;font-family:'Zilla Slab';font-weight:600;font-size:.9rem;
+    padding:10px 20px;border-radius:999px;border:1.5px dashed var(--line);color:#9C958A;background:transparent;
+  }
+
+  /* The hidden attribute must always win — .sheet-back is display:flex,
+     which would otherwise leave an invisible overlay swallowing every
+     click on the page. */
+  [hidden]{display:none !important}
+
+  /* BOOKING SHEET */
+  .sheet-back{
+    position:fixed;inset:0;z-index:200;background:rgba(16,16,16,.46);
+    display:flex;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  }
+  .sheet{
+    position:relative;width:min(620px,100%);margin:auto;background:#fff;
+    border-radius:var(--radius);padding:34px 32px 30px;
+    box-shadow:0 30px 70px rgba(16,16,16,.28);
+  }
+  .sheet h3{font-size:1.7rem}
+  .sheet-sub{color:var(--ink-soft);font-size:.95rem;margin:8px 0 0}
+  .sheet-close{
+    position:absolute;top:12px;right:14px;width:36px;height:36px;border-radius:50%;
+    border:0;background:transparent;font-size:1.6rem;line-height:1;color:var(--ink-soft);cursor:pointer;
+  }
+  .sheet-close:hover{background:var(--bg-warm);color:var(--ink)}
+
+  .sheet fieldset{border:0;padding:0;margin:26px 0 0;min-width:0}
+  .sheet legend{
+    font-family:'Zilla Slab';font-weight:600;font-size:.74rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft);padding:0;margin-bottom:10px;
+  }
+  .sess{
+    display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:center;
+    border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;
+    cursor:pointer;transition:border-color .15s,background .15s;
+  }
+  .sess:hover{border-color:var(--slate)}
+  .sess.on{border-color:var(--slate);background:#F7F9FB}
+  .sess.off{opacity:.5;cursor:not-allowed}
+  .sess input[type=checkbox]{width:18px;height:18px;margin:0;accent-color:var(--slate)}
+  .sess-name{font-weight:700;font-size:.97rem;line-height:1.35}
+  .sess-when{font-size:.83rem;color:var(--ink-soft);margin-top:2px}
+  .sess-right{display:flex;align-items:center;gap:10px}
+  .sess-price{font-family:'Zilla Slab';font-weight:600;white-space:nowrap;font-size:.95rem}
+  .sess select{
+    font:inherit;font-size:.88rem;padding:6px 8px;border:1.5px solid var(--line);
+    border-radius:8px;background:#fff;color:var(--ink);
+  }
+  .sess select:disabled{opacity:.45}
+
+  .total{
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    margin-top:14px;padding:14px 16px;border-radius:12px;background:var(--bg-warm);
+    font-family:'Zilla Slab';font-weight:600;
+  }
+  .total b{font-size:1.25rem}
+  .pay-note{font-size:.85rem;color:var(--ink-soft);margin:8px 2px 0}
+
+  .f2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .sheet label.fld{display:block;margin-top:14px;font-size:.83rem;font-weight:700;color:var(--ink)}
+  .sheet label.fld span{display:block;margin-bottom:5px}
+  .sheet input[type=text],.sheet input[type=email],.sheet input[type=tel]{
+    width:100%;font:inherit;font-size:.95rem;padding:10px 12px;
+    border:1.5px solid var(--line);border-radius:10px;background:var(--bg-warm);color:var(--ink);outline:0;
+    transition:border-color .15s,background .15s;
+  }
+  .sheet input:focus{border-color:var(--slate);background:#fff}
+  .radio-row{display:flex;gap:10px;margin-top:7px}
+  .radio-row label{
+    flex:1;text-align:center;font-size:.92rem;font-weight:700;padding:9px 10px;
+    border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s;
+  }
+  .radio-row label.on{border-color:var(--slate);background:#F7F9FB;color:var(--slate-deep)}
+  /* The radio itself is hidden, so the label carries the focus ring —
+     otherwise tabbing through the form lands somewhere invisible. */
+  .radio-row label:focus-within{border-color:var(--slate);box-shadow:0 0 0 3px rgba(91,113,137,.22)}
+  .radio-row input{position:absolute;opacity:0;pointer-events:none}
+
+  .terms{display:flex;gap:10px;align-items:flex-start;margin-top:20px;font-size:.9rem;line-height:1.5}
+  .terms input{width:18px;height:18px;margin:2px 0 0;flex-shrink:0;accent-color:var(--slate)}
+  .terms a{color:var(--slate);text-decoration:underline}
+
+  .sheet-submit{width:100%;margin-top:20px;padding:14px;font-size:1rem;border:0;cursor:pointer}
+  .sheet-submit:disabled{opacity:.5;cursor:progress}
+  .sheet-msg{
+    margin-top:14px;padding:12px 14px;border-radius:10px;font-size:.9rem;line-height:1.55;
+    background:#FCEDEA;border:1px solid #E9C3BA;color:var(--coral-deep);
+  }
+  .sheet-msg a{color:var(--coral-deep);font-weight:700}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+  .done{text-align:center;padding:14px 0 4px}
+  .done-tick{font-size:2.6rem;line-height:1}
+  .done h3{margin-top:12px}
+  .done p{color:var(--ink-soft);margin:10px auto 0;max-width:44ch}
+  .done ul{list-style:none;padding:0;margin:20px 0 0;text-align:left}
+  .done li{
+    display:flex;justify-content:space-between;gap:14px;padding:11px 14px;
+    border:1px solid var(--line);border-radius:10px;margin-bottom:7px;font-size:.94rem;
+  }
+
+  @media (max-width:640px){
+    .sheet{padding:28px 20px 24px}
+    .f2{grid-template-columns:1fr;gap:0}
+    .sess{grid-template-columns:20px 1fr;row-gap:8px}
+    .sess-right{grid-column:2;justify-content:flex-start}
+  }
+
   @media (max-width:860px){
     .about-grid{grid-template-columns:1fr;gap:36px}
     .tw-grid,.visit-grid{grid-template-columns:1fr}
@@ -311,6 +427,15 @@
   </div>
 </footer>
 
+<!-- Booking sheet. Everything inside is drawn by JS so the EN/IT swap
+     can rebuild it wholesale rather than patching textContent. -->
+<div class="sheet-back" id="sheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-h">
+    <button class="sheet-close" id="sheet-x" aria-label="Close">&times;</button>
+    <div id="sheet-body"></div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    CONFIG — same Supabase project as the moms-bookstore admin.
@@ -329,6 +454,80 @@ const T = {
   signup:  {en:'Sign up',                   it:'Iscriviti'},
   today:   {en:'Today',                     it:'Oggi'},
   soon:    {en:'Coming soon.',              it:'Presto disponibile.'}
+};
+
+/* Everything the booking sheet says, in both languages. */
+const B = {
+  title:    {en:'Book your place',            it:'Prenota il tuo posto'},
+  sub:      {en:'Choose the sessions you would like to come to. Payment is made on the day of the activity.',
+             it:'Scegli le sessioni a cui vuoi partecipare. Il pagamento si effettua il giorno dell’attività.'},
+  sessions: {en:'Sessions',                   it:'Sessioni'},
+  who:      {en:'Your details',               it:'I tuoi dati'},
+  name:     {en:'Full name',                  it:'Nome e cognome'},
+  email:    {en:'E-mail',                     it:'E-mail'},
+  phone:    {en:'Phone number',               it:'Numero di telefono'},
+  age:      {en:'Child’s age',                it:'Età del bambino'},
+  agleHint: {en:'e.g. 7, or 5 and 8',         it:'es. 7, oppure 5 e 8'},
+  school:   {en:'School name',                it:'Nome della scuola'},
+  first:    {en:'First time to visit us?',    it:'È la prima volta che ci venite a trovare?'},
+  yes:      {en:'Yes',                        it:'Sì'},
+  no:       {en:'No',                         it:'No'},
+  people:   {en:'people',                     it:'persone'},
+  person:   {en:'person',                     it:'persona'},
+  free:     {en:'Free',                       it:'Gratis'},
+  left:     {en:'{n} places left',            it:'{n} posti liberi'},
+  lastFew:  {en:'Only {n} left',              it:'Solo {n} rimasti'},
+  full:     {en:'Full',                       it:'Completo'},
+  closed:   {en:'Bookings closed',            it:'Iscrizioni chiuse'},
+  total:    {en:'Total, payable on the day',  it:'Totale, da pagare in loco'},
+  payNote:  {en:'Payment is made on the day of the activity — nothing is charged now.',
+             it:'Il pagamento si effettua il giorno dell’attività — non viene addebitato nulla adesso.'},
+  termsA:   {en:'I accept the ',              it:'Accetto i '},
+  termsT:   {en:'Terms & Conditions',         it:'Termini e condizioni'},
+  termsB:   {en:' and the ',                  it:' e la '},
+  termsP:   {en:'Privacy Policy',             it:'Privacy Policy'},
+  send:     {en:'Send booking',               it:'Invia prenotazione'},
+  sending:  {en:'Sending…',                   it:'Invio in corso…'},
+  close:    {en:'Close',                      it:'Chiudi'},
+  none:     {en:'There is nothing open for booking just now.',
+             it:'Al momento non ci sono sessioni prenotabili.'},
+
+  /* validation and refusals */
+  pickOne:  {en:'Please choose at least one session.',
+             it:'Scegli almeno una sessione.'},
+  needTerms:{en:'Please accept the Terms & Conditions to continue.',
+             it:'Accetta i Termini e condizioni per continuare.'},
+  needFirst:{en:'Please tell us whether this is your first visit.',
+             it:'Indica se è la vostra prima visita.'},
+  errFull:  {en:'“{e}” filled up while you were typing — only {n} place(s) left.',
+             it:'“{e}” si è riempito mentre compilavi — restano solo {n} posti.'},
+  errDup:   {en:'“{e}” is already booked with that e-mail address.',
+             it:'“{e}” risulta già prenotato con questo indirizzo e-mail.'},
+  errClosed:{en:'“{e}” is no longer taking bookings.',
+             it:'“{e}” non accetta più prenotazioni.'},
+  errField: {en:'Please check the {f} field.',
+             it:'Controlla il campo {f}.'},
+  errThrot: {en:'That is a lot of bookings from one address. Try again in an hour, or email us.',
+             it:'Troppe prenotazioni da questo indirizzo. Riprova tra un’ora, o scrivici.'},
+  errNet:   {en:'We could not reach the booking system. Please <a href="{m}">send us the details by e-mail</a> instead, or try again in a minute.',
+             it:'Non riusciamo a raggiungere il sistema di prenotazione. <a href="{m}">Inviaci i dati per e-mail</a>, oppure riprova tra un minuto.'},
+  okTitle:  {en:'You’re booked in!',          it:'Prenotazione confermata!'},
+  okBody:   {en:'We have saved your place and sent the details to the shop. Payment is made on the day — see you at Book Nook Lane!',
+             it:'Abbiamo salvato il tuo posto e inviato i dati alla libreria. Il pagamento si effettua in loco — ci vediamo a Book Nook Lane!'}
+};
+
+/* Field names as they appear in error messages, keyed to what the
+   database sends back. */
+const FIELD_NAMES = {
+  name:  {en:'full name',    it:'nome e cognome'},
+  email: {en:'e-mail',       it:'e-mail'},
+  phone: {en:'phone number', it:'numero di telefono'},
+  age:   {en:'child’s age',  it:'età del bambino'},
+  school:{en:'school name',  it:'nome della scuola'},
+  terms: {en:'terms',        it:'termini'},
+  sessions:{en:'sessions',   it:'sessioni'},
+  participants:{en:'number of people', it:'numero di persone'},
+  first_visit:{en:'first visit', it:'prima visita'}
 };
 
 let lang = 'en';
@@ -355,6 +554,31 @@ function esc(s){
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+/* ---- Booking helpers -----------------------------------------------------
+   places(ev) is null when the event has no capacity set, meaning unlimited.
+   An event is bookable while sign-ups are open and at least one place is
+   free; the database re-checks both when the form is submitted, so this is
+   only about what the page shows. */
+
+function places(ev){
+  return ev.capacity == null ? null : Math.max(ev.capacity - (ev.spots_taken || 0), 0);
+}
+function bookable(ev){
+  return ev.signups_open !== false && places(ev) !== 0;
+}
+function money(n){
+  return new Intl.NumberFormat(lang === 'it' ? 'it-IT' : 'en-IE',
+    {style:'currency', currency:'EUR', minimumFractionDigits:0, maximumFractionDigits:2}).format(n);
+}
+function priceLabel(ev){
+  const p = Number(ev.price);
+  if(!ev.price || Number.isNaN(p)) return '';
+  return p === 0 ? B.free[lang] : money(p);
+}
+function fill(str, vars){
+  return Object.entries(vars).reduce((s,[k,v]) => s.replaceAll('{'+k+'}', v), str);
+}
+
 function renderEvents(){
   const list  = document.getElementById('events-list');
   const state = document.getElementById('events-state');
@@ -374,9 +598,23 @@ function renderEvents(){
     const day   = d.getDate();
     const meta  = [ev.time, ev.age_range].filter(Boolean).join(' · ');
     const foot  = [ev.location, ev.details].filter(Boolean).join(' · ');
-    const btn   = ev.signup_url
-      ? `<a class="btn signup" href="${esc(ev.signup_url)}" target="_blank" rel="noopener">${T.signup[lang]}</a>`
-      : '';
+
+    const n     = places(ev);
+    const price = priceLabel(ev);
+
+    let seats = '';
+    if(n !== null && n > 0){
+      const low = n <= 3;
+      seats = `<span class="ev-left${low ? ' low' : ''}">${
+        esc(fill(low ? B.lastFew[lang] : B.left[lang], {n}))
+      }</span>`;
+    }
+
+    let action;
+    if(n === 0)                       action = `<span class="pill">${esc(B.full[lang])}</span>`;
+    else if(ev.signups_open === false) action = `<span class="pill">${esc(B.closed[lang])}</span>`;
+    else action = `<button class="btn signup" type="button" onclick="openSheet('${esc(ev.id)}')">${esc(T.signup[lang])}</button>`;
+
     return `
       <article class="event e${i % 4}">
         <div class="date"><span class="m">${esc(month)}</span><span class="d">${day}</span></div>
@@ -386,10 +624,372 @@ function renderEvents(){
           ${ev.tagline ? `<p>${esc(ev.tagline)}</p>` : ''}
           ${foot ? `<p class="loc">${esc(foot)}</p>` : ''}
         </div>
-        ${btn}
+        <div class="ev-side">
+          ${price ? `<span class="ev-price">${esc(price)}</span>` : ''}
+          ${seats}
+          ${action}
+        </div>
       </article>`;
   }).join('');
 }
+
+
+/* ============================================================
+   BOOKING SHEET
+   One submission can cover several sessions, the way the old
+   Jotform did — except the session list is built from whatever
+   is published in the admin, so nothing is typed twice.
+   ============================================================ */
+
+const sheetEl  = document.getElementById('sheet');
+const sheetBody = document.getElementById('sheet-body');
+
+/* Which sessions are ticked, and for how many people: id -> qty */
+let picked = new Map();
+let sheetDone = null;   // holds the confirmation once a booking succeeds
+
+window.openSheet = function(preselectId){
+  if(!sheetDone){
+    picked = new Map();
+    if(preselectId) picked.set(preselectId, 1);
+  }
+  sheetEl.hidden = false;
+  document.body.style.overflow = 'hidden';
+  drawSheet();
+  const first = sheetBody.querySelector('input:not([type=hidden]):not(.hp)');
+  if(first && !sheetDone) setTimeout(() => first.focus(), 30);
+};
+
+function closeSheet(){
+  sheetEl.hidden = true;
+  document.body.style.overflow = '';
+  if(sheetDone){ sheetDone = null; picked = new Map(); }
+}
+
+document.getElementById('sheet-x').addEventListener('click', closeSheet);
+sheetEl.addEventListener('mousedown', e => { if(e.target === sheetEl) closeSheet(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && !sheetEl.hidden) closeSheet(); });
+
+/* Whatever the visitor has already typed, so redrawing the sheet — on a
+   language switch, or after a refused booking — never empties the form. */
+function grabTyped(){
+  const form = document.getElementById('book-form');
+  if(!form) return null;
+  const checked = form.querySelector('#first-row input:checked');
+  return {
+    full_name: form.full_name.value,
+    email    : form.email.value,
+    phone    : form.phone.value,
+    child_age: form.child_age.value,
+    school   : form.school.value,
+    first    : checked ? checked.value : null,
+    terms    : form.terms.checked
+  };
+}
+
+function putTyped(v){
+  const form = document.getElementById('book-form');
+  if(!form || !v) return;
+  ['full_name','email','phone','child_age','school'].forEach(k => { form[k].value = v[k] || ''; });
+  form.terms.checked = !!v.terms;
+  if(v.first){
+    const radio = form.querySelector(`#first-row input[value="${v.first}"]`);
+    if(radio){ radio.checked = true; radio.dispatchEvent(new Event('change')); }
+  }
+}
+
+function drawSheet(){
+  if(sheetDone){ drawDone(); return; }
+
+  const typed = grabTyped();
+  const open  = events.filter(bookable);
+  const loc  = lang === 'it' ? 'it-IT' : 'en-GB';
+
+  const rows = open.map(ev => {
+    const n    = places(ev);
+    const on   = picked.has(ev.id);
+    const qty  = picked.get(ev.id) || 1;
+    const max  = Math.min(5, n === null ? 5 : n);
+    const when = [
+      new Date(ev.date + 'T00:00:00').toLocaleDateString(loc, {weekday:'short', day:'numeric', month:'long'}),
+      ev.time
+    ].filter(Boolean).join(' · ');
+    const price = priceLabel(ev);
+
+    const opts = Array.from({length:max}, (_,k) => k + 1).map(k =>
+      `<option value="${k}"${k === qty ? ' selected' : ''}>${k} ${
+        esc(k === 1 ? B.person[lang] : B.people[lang])
+      }</option>`).join('');
+
+    // A div rather than a label: a <select> inside a <label> toggles the
+    // checkbox when you try to open the dropdown.
+    return `
+      <div class="sess${on ? ' on' : ''}" data-row="${esc(ev.id)}">
+        <input type="checkbox" data-pick="${esc(ev.id)}"${on ? ' checked' : ''}
+               aria-label="${esc(ev.name)}">
+        <span>
+          <span class="sess-name">${esc(ev.name)}</span>
+          <span class="sess-when">${esc(when)}${
+            n !== null && n <= 3 ? ' · ' + esc(fill(B.lastFew[lang], {n})) : ''
+          }</span>
+        </span>
+        <span class="sess-right">
+          ${price ? `<span class="sess-price">${esc(price)}</span>` : ''}
+          <select data-qty="${esc(ev.id)}"${on ? '' : ' disabled'}
+                  aria-label="${esc(B.people[lang])}">${opts}</select>
+        </span>
+      </div>`;
+  }).join('');
+
+  sheetBody.innerHTML = `
+    <h3 id="sheet-h">${esc(B.title[lang])}</h3>
+    <p class="sheet-sub">${esc(B.sub[lang])}</p>
+    ${open.length ? `
+    <form id="book-form" novalidate>
+      <fieldset>
+        <legend>${esc(B.sessions[lang])}</legend>
+        ${rows}
+        <div class="total"><span>${esc(B.total[lang])}</span><b id="sheet-total">${esc(money(0))}</b></div>
+        <p class="pay-note">${esc(B.payNote[lang])}</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>${esc(B.who[lang])}</legend>
+        <div class="f2">
+          <label class="fld"><span>${esc(B.name[lang])} *</span>
+            <input type="text" name="full_name" maxlength="80" autocomplete="name" required></label>
+          <label class="fld"><span>${esc(B.email[lang])} *</span>
+            <input type="email" name="email" maxlength="120" autocomplete="email" required></label>
+        </div>
+        <div class="f2">
+          <label class="fld"><span>${esc(B.phone[lang])} *</span>
+            <input type="tel" name="phone" maxlength="40" autocomplete="tel" required></label>
+          <label class="fld"><span>${esc(B.age[lang])} *</span>
+            <input type="text" name="child_age" maxlength="40" placeholder="${esc(B.agleHint[lang])}" required></label>
+        </div>
+        <label class="fld"><span>${esc(B.school[lang])} *</span>
+          <input type="text" name="school" maxlength="80" required></label>
+
+        <label class="fld" style="margin-top:16px"><span>${esc(B.first[lang])} *</span></label>
+        <div class="radio-row" id="first-row">
+          <label><input type="radio" name="first_visit" value="yes">${esc(B.yes[lang])}</label>
+          <label><input type="radio" name="first_visit" value="no">${esc(B.no[lang])}</label>
+        </div>
+
+        <!-- Honeypot: off-screen and never focusable. Humans leave it empty. -->
+        <input class="hp" type="text" name="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      </fieldset>
+
+      <label class="terms">
+        <input type="checkbox" name="terms">
+        <span>${esc(B.termsA[lang])}<a href="terms.html" target="_blank" rel="noopener">${esc(B.termsT[lang])}</a>${
+          esc(B.termsB[lang])}<a href="privacy.html" target="_blank" rel="noopener">${esc(B.termsP[lang])}</a>.</span>
+      </label>
+
+      <button class="btn sheet-submit" type="submit" id="sheet-send">${esc(B.send[lang])}</button>
+      <div class="sheet-msg" id="sheet-msg" hidden></div>
+    </form>` : `<div class="state" style="margin-top:26px">${esc(B.none[lang])}</div>`}
+  `;
+
+  if(!open.length) return;
+  wireSheet();
+  putTyped(typed);
+  updateTotal();
+}
+
+function wireSheet(){
+  sheetBody.querySelectorAll('[data-pick]').forEach(box => {
+    box.addEventListener('change', () => {
+      const id  = box.dataset.pick;
+      const sel = sheetBody.querySelector(`[data-qty="${CSS.escape(id)}"]`);
+      if(box.checked){
+        picked.set(id, Number(sel.value) || 1);
+        sel.disabled = false;
+      }else{
+        picked.delete(id);
+        sel.disabled = true;
+      }
+      box.closest('.sess').classList.toggle('on', box.checked);
+      updateTotal();
+    });
+  });
+
+  sheetBody.querySelectorAll('[data-qty]').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const id = sel.dataset.qty;
+      if(picked.has(id)) picked.set(id, Number(sel.value) || 1);
+      updateTotal();
+    });
+  });
+
+  // Clicking anywhere on the row ticks it — except on the dropdown itself.
+  sheetBody.querySelectorAll('[data-row]').forEach(row => {
+    row.addEventListener('click', e => {
+      if(e.target.closest('select') || e.target.matches('input[type=checkbox]')) return;
+      const box = row.querySelector('[data-pick]');
+      box.checked = !box.checked;
+      box.dispatchEvent(new Event('change'));
+    });
+  });
+
+  sheetBody.querySelectorAll('#first-row input').forEach(r => {
+    r.addEventListener('change', () => {
+      sheetBody.querySelectorAll('#first-row label').forEach(l => {
+        const input = l.querySelector('input');
+        l.classList.toggle('on', !!input && input.checked);
+      });
+    });
+  });
+
+  document.getElementById('book-form').addEventListener('submit', submitBooking);
+}
+
+function updateTotal(){
+  let sum = 0;
+  picked.forEach((qty, id) => {
+    const ev = events.find(e => e.id === id);
+    if(ev) sum += (Number(ev.price) || 0) * qty;
+  });
+  const el = document.getElementById('sheet-total');
+  if(el) el.textContent = money(sum);
+}
+
+function showSheetMsg(html){
+  const el = document.getElementById('sheet-msg');
+  if(!el) return;
+  el.innerHTML = html;
+  el.hidden = false;
+  el.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* A pre-filled e-mail, used only when the database cannot be reached —
+   the free Supabase tier sleeps when the site is quiet, and a booking
+   form that fails silently is worse than no form at all. */
+function mailtoFallback(d){
+  const lines = [
+    `${B.name[lang]}: ${d.p_full_name}`,
+    `${B.email[lang]}: ${d.p_email}`,
+    `${B.phone[lang]}: ${d.p_phone}`,
+    `${B.age[lang]}: ${d.p_child_age}`,
+    `${B.school[lang]}: ${d.p_school}`,
+    `${B.first[lang]} ${d.p_first_visit ? B.yes[lang] : B.no[lang]}`,
+    '',
+    B.sessions[lang] + ':',
+    ...d.p_items.map(it => {
+      const ev = events.find(e => e.id === it.event_id);
+      return `· ${ev ? ev.name : it.event_id} — ${it.participants} ${
+        it.participants === 1 ? B.person[lang] : B.people[lang]}`;
+    })
+  ];
+  const to = (pick('social_email') || 'booknooklane@gmail.com');
+  return 'mailto:' + to
+       + '?subject=' + encodeURIComponent(B.title[lang] + ' — Book Nook Lane')
+       + '&body='    + encodeURIComponent(lines.join('\n'));
+}
+
+async function submitBooking(e){
+  e.preventDefault();
+  const form = e.target;
+  const btn  = document.getElementById('sheet-send');
+  const msg  = document.getElementById('sheet-msg');
+  if(msg) msg.hidden = true;
+
+  if(!picked.size){ showSheetMsg(esc(B.pickOne[lang])); return; }
+  if(!form.terms.checked){ showSheetMsg(esc(B.needTerms[lang])); return; }
+
+  const firstVisit = form.querySelector('#first-row input:checked');
+  if(!firstVisit){ showSheetMsg(esc(B.needFirst[lang])); return; }
+
+  // Let the browser say its piece about required/empty/badly-typed fields.
+  if(!form.checkValidity()){ form.reportValidity(); return; }
+
+  const payload = {
+    p_full_name  : form.full_name.value.trim(),
+    p_email      : form.email.value.trim(),
+    p_phone      : form.phone.value.trim(),
+    p_child_age  : form.child_age.value.trim(),
+    p_first_visit: firstVisit.value === 'yes',
+    p_school     : form.school.value.trim(),
+    p_lang       : lang,
+    p_terms      : true,
+    p_hp         : form.hp.value,
+    p_items      : [...picked].map(([event_id, participants]) => ({event_id, participants}))
+  };
+
+  btn.disabled = true;
+  btn.textContent = B.sending[lang];
+
+  let out;
+  try{
+    const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/book_sessions', {
+      method : 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error(res.status + ' ' + res.statusText);
+    out = await res.json();
+  }catch(err){
+    console.error('Booking failed:', err);
+    btn.disabled = false;
+    btn.textContent = B.send[lang];
+    showSheetMsg(fill(B.errNet[lang], {m: esc(mailtoFallback(payload))}));
+    return;
+  }
+
+  btn.disabled = false;
+  btn.textContent = B.send[lang];
+
+  if(!out || out.ok !== true){
+    const code = out && out.error;
+    let text;
+    if(code === 'full')            text = fill(B.errFull[lang],  {e: esc(out.event), n: out.remaining});
+    else if(code === 'duplicate')  text = fill(B.errDup[lang],   {e: esc(out.event)});
+    else if(code === 'closed')     text = fill(B.errClosed[lang],{e: esc(out.event || '')});
+    else if(code === 'throttled')  text = esc(B.errThrot[lang]);
+    else {
+      const f = (FIELD_NAMES[out && out.field] || {})[lang] || (out && out.field) || '';
+      text = fill(B.errField[lang], {f: esc(f)});
+    }
+    // Something has moved underneath us — pull fresh counts, redraw the
+    // sheet (typed answers are carried over) and then say what went wrong.
+    await load();
+    if(!sheetEl.hidden) drawSheet();
+    showSheetMsg(text);
+    return;
+  }
+
+  sheetDone = {
+    total: out.total,
+    lines: [...picked].map(([id, qty]) => {
+      const ev = events.find(e => e.id === id);
+      return {name: ev ? ev.name : '', qty, price: (Number(ev && ev.price) || 0) * qty};
+    })
+  };
+  drawDone();
+  load();              // pull the new spots_taken so the cards update behind
+}
+
+function drawDone(){
+  sheetBody.innerHTML = `
+    <div class="done">
+      <div class="done-tick">🎉</div>
+      <h3>${esc(B.okTitle[lang])}</h3>
+      <p>${esc(B.okBody[lang])}</p>
+      <ul>
+        ${sheetDone.lines.map(l => `
+          <li><span>${esc(l.name)} · ${l.qty} ${
+            esc(l.qty === 1 ? B.person[lang] : B.people[lang])
+          }</span><b>${esc(l.price ? money(l.price) : B.free[lang])}</b></li>`).join('')}
+        <li><span>${esc(B.total[lang])}</span><b>${esc(money(sheetDone.total || 0))}</b></li>
+      </ul>
+      <button class="btn sheet-submit" type="button" onclick="closeBookingSheet()">${esc(B.close[lang])}</button>
+    </div>`;
+}
+window.closeBookingSheet = closeSheet;
 
 /* ---- Opening hours -------------------------------------------------------
    She types free text, one day per line, e.g.
@@ -510,6 +1110,9 @@ function setLang(l){
   document.getElementById('btn-it').classList.toggle('on', l === 'it');
   renderEvents();
   renderContent();
+  // The sheet is drawn from the same dictionary, so redraw it in place
+  // rather than losing whatever the visitor has already ticked.
+  if(!sheetEl.hidden) drawSheet();
 }
 
 async function load(){

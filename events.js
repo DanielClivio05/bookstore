@@ -25,9 +25,11 @@ const FIELDS = {
   tagline  : document.getElementById('event-tagline'),
   age      : document.getElementById('event-age'),
   details  : document.getElementById('event-details'),
-  signup   : document.getElementById('event-signup'),
+  price    : document.getElementById('event-price'),
+  capacity : document.getElementById('event-capacity'),
   contact  : document.getElementById('event-contact'),
   published: document.getElementById('event-published'),
+  open     : document.getElementById('event-open'),
 }
 
 let allEvents = []
@@ -75,12 +77,16 @@ function eventCard (ev, isPast = false) {
   const meta  = [displayTime(ev.time), ev.location].filter(Boolean).join(' · ')
   const extra = [
     ev.age_range ? `Ages ${ev.age_range}` : null,
-    ev.signup_url ? 'Sign-up link set' : null,
+    ev.price != null ? `€${Number(ev.price).toFixed(2).replace(/\.00$/, '')} each` : 'Free',
   ].filter(Boolean).join(' · ')
 
   const badge = ev.published
     ? '<span class="ev-badge live">Live</span>'
     : '<span class="ev-badge draft">Draft</span>'
+
+  const closed = ev.published && ev.signups_open === false
+    ? '<span class="ev-badge draft">Sign-ups closed</span>'
+    : ''
 
   return `
     <div class="event-card${isPast ? ' past' : ''}">
@@ -89,9 +95,10 @@ function eventCard (ev, isPast = false) {
         <span class="event-card-month">${MONTHS_SHORT[parseInt(m, 10) - 1]} ${y.slice(2)}</span>
       </div>
       <div class="event-card-info">
-        <div class="event-card-name">${e(ev.name)}${badge}</div>
+        <div class="event-card-name">${e(ev.name)}${badge}${closed}</div>
         <div class="event-card-meta">${e(meta)}</div>
         ${extra ? `<div class="ev-extra">${e(extra)}</div>` : ''}
+        ${bookedBar(ev)}
       </div>
       <div class="event-card-actions">
         <button class="btn-icon" onclick="togglePublish('${ev.id}')"
@@ -101,6 +108,31 @@ function eventCard (ev, isPast = false) {
         <button class="btn-icon" onclick="editEvent('${ev.id}')" title="Edit">✏️</button>
         <button class="btn-icon danger" onclick="deleteEvent('${ev.id}')" title="Delete">🗑️</button>
       </div>
+    </div>`
+}
+
+
+// How full is this session? A bar when there's a limit, a plain count when
+// there isn't. spots_taken is kept up to date by the database itself.
+function bookedBar (ev) {
+  const taken = ev.spots_taken || 0
+
+  if (ev.capacity == null) {
+    return taken
+      ? `<div class="ev-extra">${taken} booked · no limit set</div>`
+      : ''
+  }
+
+  const pct  = Math.min(100, Math.round((taken / ev.capacity) * 100))
+  const full = taken >= ev.capacity
+  const low  = !full && ev.capacity - taken <= 3
+
+  return `
+    <div class="cap-wrap">
+      <div class="cap-bar"><span class="cap-fill${full ? ' full' : low ? ' low' : ''}"
+        style="width:${pct}%"></span></div>
+      <span class="cap-text${full ? ' full' : ''}">${taken} / ${ev.capacity}${
+        full ? ' · full' : ` · ${ev.capacity - taken} left`}</span>
     </div>`
 }
 
@@ -152,9 +184,11 @@ function fillForm (ev) {
   FIELDS.tagline.value   = ev.tagline    || ''
   FIELDS.age.value       = ev.age_range  || ''
   FIELDS.details.value   = ev.details    || ''
-  FIELDS.signup.value    = ev.signup_url || ''
+  FIELDS.price.value     = ev.price    == null ? '' : ev.price
+  FIELDS.capacity.value  = ev.capacity == null ? '' : ev.capacity
   FIELDS.contact.value   = ev.contact    || ''
   FIELDS.published.checked = !!ev.published
+  FIELDS.open.checked      = ev.signups_open !== false
 
   formSectionLabel.textContent = `Editing: ${ev.name}`
   saveBtn.textContent = 'Save changes'
@@ -165,6 +199,7 @@ function resetForm () {
   form.reset()
   FIELDS.id.value = ''
   FIELDS.published.checked = false
+  FIELDS.open.checked      = true
   formSectionLabel.textContent = 'New event'
   saveBtn.textContent = 'Save event'
   resetFormBtn.hidden = true
@@ -183,24 +218,28 @@ form.addEventListener('submit', async e => {
     tagline  : FIELDS.tagline.value.trim(),
     age      : FIELDS.age.value.trim(),
     details  : FIELDS.details.value.trim(),
-    signup   : FIELDS.signup.value.trim(),
+    price    : FIELDS.price.value.trim(),
+    capacity : FIELDS.capacity.value.trim(),
     contact  : FIELDS.contact.value.trim(),
     published: FIELDS.published.checked,
+    open     : FIELDS.open.checked,
   }
 
   if (!validate(raw)) return
 
   const payload = {
-    name      : raw.name,
-    date      : raw.date,
-    time      : parseTimeTo24h(raw.time) || raw.time,
-    location  : raw.location,
-    tagline   : raw.tagline  || null,
-    age_range : raw.age      || null,
-    details   : raw.details  || null,
-    signup_url: raw.signup   || null,
-    contact   : raw.contact  || null,
-    published : raw.published,
+    name        : raw.name,
+    date        : raw.date,
+    time        : parseTimeTo24h(raw.time) || raw.time,
+    location    : raw.location,
+    tagline     : raw.tagline  || null,
+    age_range   : raw.age      || null,
+    details     : raw.details  || null,
+    price       : raw.price    === '' ? null : Number(raw.price),
+    capacity    : raw.capacity === '' ? null : Number(raw.capacity),
+    contact     : raw.contact  || null,
+    published   : raw.published,
+    signups_open: raw.open,
   }
 
   const editingId = FIELDS.id.value
@@ -242,11 +281,32 @@ function validate (d) {
     if (!value) { showToast(msg, true); el.focus(); return false }
   }
 
-  if (d.signup && !/^https?:\/\/\S+$/i.test(d.signup)) {
-    showToast('The sign-up link needs to start with https://', true)
-    FIELDS.signup.focus()
-    return false
+  if (d.price !== '') {
+    const p = Number(d.price)
+    if (!Number.isFinite(p) || p < 0 || p > 999) {
+      showToast('Price should be a number between 0 and 999', true)
+      FIELDS.price.focus()
+      return false
+    }
   }
+
+  if (d.capacity !== '') {
+    const c = Number(d.capacity)
+    if (!Number.isInteger(c) || c < 1 || c > 500) {
+      showToast('Places should be a whole number between 1 and 500', true)
+      FIELDS.capacity.focus()
+      return false
+    }
+    // Nothing in the database stops her setting places below the number
+    // already booked — it just wouldn't mean anything. Catch it here.
+    const ev = allEvents.find(x => x.id === FIELDS.id.value)
+    if (ev && (ev.spots_taken || 0) > c) {
+      showToast(`${ev.spots_taken} people are already booked — places can't go below that`, true)
+      FIELDS.capacity.focus()
+      return false
+    }
+  }
+
   return true
 }
 

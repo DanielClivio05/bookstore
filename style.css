@@ -479,6 +479,120 @@ tbody td { padding: 11px 14px; }
 .setup-notice code {
   background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 4px; font-size: 12px;
 }
+/* ===== CAPACITY BAR (events list) ===== */
+.cap-wrap { display: flex; align-items: center; gap: 10px; margin-top: 7px; max-width: 320px; }
+.cap-bar {
+  flex: 1; height: 6px; border-radius: 3px;
+  background: var(--surface-alt); overflow: hidden;
+}
+.cap-fill { display: block; height: 100%; background: var(--primary); border-radius: 3px; }
+.cap-fill.low  { background: var(--gold); }
+.cap-fill.full { background: var(--danger); }
+.cap-text { font-size: 11.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.cap-text.full { color: var(--danger); }
+
+/* ===== SIGN-UPS: CALENDAR ===== */
+.cal-head { display: flex; align-items: center; gap: 10px; margin: 4px 0 14px; }
+.cal-title {
+  font-family: var(--font-display);
+  font-size: 19px; font-weight: 600; min-width: 190px;
+}
+.cal {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px;
+  background: var(--border); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+}
+.cal-dow {
+  background: var(--bg); padding: 9px 10px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--muted);
+}
+.cal-day {
+  background: var(--surface); border: 0; text-align: left;
+  min-height: 96px; padding: 8px 9px 10px;
+  display: flex; flex-direction: column; align-items: stretch; gap: 4px;
+  font-family: inherit; cursor: pointer; transition: background 0.12s;
+}
+.cal-day:disabled { cursor: default; }
+.cal-day.has:hover { background: var(--primary-light); }
+.cal-day.out { background: var(--bg); }
+.cal-day.out .cal-num { color: #B7B0A4; }
+.cal-num { font-size: 12.5px; font-weight: 600; color: var(--text); }
+.cal-day.today .cal-num {
+  background: var(--primary); color: #fff;
+  border-radius: 50%; width: 22px; height: 22px;
+  display: grid; place-items: center; margin: -2px 0 2px -2px;
+}
+.cal-day.sel { background: var(--primary-light); box-shadow: inset 0 0 0 2px var(--primary); }
+
+.chip-ev {
+  display: block; background: var(--primary-light); color: var(--primary-dark);
+  border-radius: 6px; padding: 3px 7px;
+  font-size: 11.5px; line-height: 1.35; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chip-ev b { font-weight: 700; }
+.chip-ev.full  { background: var(--danger-light); color: var(--danger); }
+.chip-ev.draft { background: var(--surface-alt); color: var(--muted); }
+.chip-ev .dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold); margin-left: 5px; vertical-align: middle;
+}
+
+/* ===== SIGN-UPS: DAY REGISTER ===== */
+.day-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; margin: 34px 0 14px;
+}
+.reg {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  margin-bottom: 18px; overflow: hidden;
+}
+.reg-head {
+  display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+  padding: 16px 18px; border-bottom: 1px solid var(--border); background: var(--bg);
+}
+.reg-name { font-size: 16px; font-weight: 700; }
+.reg-meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.reg-nums { margin-left: auto; text-align: right; font-size: 12.5px; color: var(--muted); }
+.reg-nums div span { font-size: 17px; font-weight: 700; color: var(--primary); }
+.reg-nums .owed  { color: var(--danger); font-weight: 600; }
+.reg-nums .clear { color: #4A6540; font-weight: 600; }
+.reg .table-wrap { border: 0; border-radius: 0; box-shadow: none; }
+
+tr.cancelled td { opacity: 0.45; text-decoration: line-through; }
+tr.cancelled .row-actions button { text-decoration: none; }
+tr.fresh { background: var(--gold-light); }
+
+.tag {
+  display: inline-block; margin-left: 7px; padding: 1px 7px;
+  border-radius: 999px; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  background: var(--surface-alt); color: var(--muted);
+}
+.tag.new { background: var(--gold); color: #4A3406; }
+
+.paid-box { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: 12.5px; }
+.paid-box input { width: 17px; height: 17px; accent-color: var(--primary); cursor: pointer; }
+.paid-box input:checked + span { color: #4A6540; font-weight: 600; }
+
+/* ===== PRINT: the register alone, for the counter on the day ===== */
+@media print {
+  nav, .events-intro, .stats-grid, .cal, .cal-head,
+  .setup-notice, .toast, .day-head button, .row-actions,
+  .reg-head .btn-icon { display: none !important; }
+  body { background: #fff; padding: 0; }
+  .page { padding: 0; max-width: none; }
+  .reg { break-inside: avoid; box-shadow: none; }
+  .paid-box input {
+    -webkit-appearance: none; appearance: none;
+    border: 1.5px solid #666; border-radius: 3px;
+  }
+  thead th { background: #fff; }
+  a { color: inherit; text-decoration: none; }
+}
+
 /* ===== AUTH ===== */
 html.auth-pending body { visibility: hidden; }
 
@@ -558,6 +672,16 @@ html.auth-pending body { visibility: hidden; }
 
   .page { padding-left: 14px; padding-right: 14px; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
+
+  /* The calendar keeps all seven columns on a phone, but the cells shrink
+     to the head-count and a colour, with the event name dropped. */
+  .cal-day { min-height: 62px; padding: 5px 4px 6px; }
+  .cal-dow { padding: 7px 4px; font-size: 10px; text-align: center; }
+  .chip-ev { font-size: 0; padding: 3px 4px; text-align: center; }
+  .chip-ev b { font-size: 11px; }
+  .chip-ev .dot { margin-left: 3px; }
+  .cal-title { font-size: 16px; min-width: 0; }
+  .reg-nums { margin-left: 0; text-align: left; }
   .book-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
   .form-row-2 { grid-template-columns: 1fr; }
   thead th:nth-child(4), tbody td:nth-child(4) { display: none; }
