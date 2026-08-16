@@ -7,6 +7,7 @@
 
 import { requireAuth } from './auth.js'
 import { supabase } from './supabase.js'
+import { mountPhotoField } from './photo-lib.js'
 
 await requireAuth()
 
@@ -25,6 +26,16 @@ const GROUPS = [
     items: [
       { key: 'about_col_1', label: 'First column',  type: 'textarea', bilingual: true },
       { key: 'about_col_2', label: 'Second column', type: 'textarea', bilingual: true },
+      { key: 'about_photo', label: 'Picture', type: 'photo', bilingual: false,
+        hint: 'Optional. Pinned up beside the text like a photo on a noticeboard, with its caption underneath. Leave it empty and the About section looks exactly as it does today.' },
+    ],
+  },
+  {
+    title: 'From our shelves',
+    sub: 'The band of book covers between the events and the About text. Choose which pictures appear there on the Photos page — this is just the line of text above them.',
+    items: [
+      { key: 'shelf_intro', label: 'Line under the heading', type: 'textarea', rows: 2, bilingual: true,
+        hint: 'e.g. A few of the books we are loving this month — come and have a flick through.' },
     ],
   },
   {
@@ -61,6 +72,10 @@ const GROUPS = [
 
 const ALL_ITEMS = GROUPS.flatMap(g => g.items)
 let original = {}
+
+// Picture slots keep their photo id in a hidden input, so the change
+// tracking and the save below work on them exactly like a text box.
+const photoFields = {}
 
 
 // ===== BUILD THE FORM =====
@@ -127,6 +142,29 @@ function buildInput (item, lang) {
     box.appendChild(tag)
   }
 
+  if (item.type === 'photo') {
+    const hidden = document.createElement('input')
+    hidden.type = 'hidden'
+    hidden.id = id
+    hidden.dataset.key = item.key
+    hidden.dataset.lang = lang
+
+    const host = document.createElement('div')
+
+    photoFields[item.key] = mountPhotoField(host, {
+      label: item.label,
+      onChange: photo => {
+        hidden.value = photo?.id || ''
+        // Programmatic changes don't fire input events, and the unsaved-changes
+        // counter listens for those.
+        hidden.dispatchEvent(new Event('input', { bubbles: true }))
+      },
+    })
+
+    box.append(hidden, host)
+    return box
+  }
+
   const input = item.type === 'textarea'
     ? document.createElement('textarea')
     : document.createElement('input')
@@ -174,6 +212,7 @@ async function load () {
       const value = row[`value_${lang}`] || ''
       el.value = value
       original[`${item.key}__${lang}`] = value
+      if (item.type === 'photo') photoFields[item.key]?.setById(value)
     }
   }
 

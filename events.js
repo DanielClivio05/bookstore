@@ -3,6 +3,7 @@
 
 import { requireAuth } from './auth.js'
 import { supabase } from './supabase.js'
+import { mountPhotoField, photoUrl } from './photo-lib.js'
 
 await requireAuth()
 
@@ -33,13 +34,24 @@ const FIELDS = {
 }
 
 let allEvents = []
+let allPhotos = []
+
+// The cover picture. Pictures live in the shared library on the Photos page,
+// so this field only ever holds a reference — picking one here never uploads
+// a second copy of a book cover she has already added.
+const photoField = mountPhotoField(document.getElementById('event-photo'), {
+  label: 'Cover picture for this event',
+})
 
 
 // ===== LOAD & RENDER =====
 
 async function loadEvents () {
-  const { data, error } = await supabase
-    .from('events').select('*').order('date', { ascending: true })
+  const [{ data, error }, { data: photos }] = await Promise.all([
+    supabase.from('events').select('*').order('date', { ascending: true }),
+    supabase.from('photos').select('*'),
+  ])
+  allPhotos = photos || []
 
   if (error) {
     if (isMissingSchema(error)) {
@@ -111,8 +123,14 @@ function eventCard (ev, isPast = false) {
     ? '<span class="ev-badge draft">Sign-ups closed</span>'
     : ''
 
+  const photo = allPhotos.find(p => p.id === ev.photo_id)
+  const thumb = photo
+    ? `<div class="ev-thumb"><img src="${photoUrl(photo, 'thumb')}" alt=""></div>`
+    : ''
+
   return `
     <div class="event-card${isPast ? ' past' : ''}">
+      ${thumb}
       <div class="event-card-date">
         <span class="event-card-day">${parseInt(d, 10)}</span>
         <span class="event-card-month">${MONTHS_SHORT[parseInt(m, 10) - 1]} ${y.slice(2)}</span>
@@ -212,6 +230,7 @@ function fillForm (ev) {
   FIELDS.contact.value   = ev.contact    || ''
   FIELDS.published.checked = !!ev.published
   FIELDS.open.checked      = ev.signups_open !== false
+  photoField.setById(ev.photo_id, allPhotos)
 
   formSectionLabel.textContent = `Editing: ${ev.name}`
   saveBtn.textContent = 'Save changes'
@@ -223,6 +242,7 @@ function resetForm () {
   FIELDS.id.value = ''
   FIELDS.published.checked = false
   FIELDS.open.checked      = true
+  photoField.set(null)
   formSectionLabel.textContent = 'New event'
   saveBtn.textContent = 'Save event'
   resetFormBtn.hidden = true
@@ -263,6 +283,7 @@ form.addEventListener('submit', async e => {
     contact     : raw.contact  || null,
     published   : raw.published,
     signups_open: raw.open,
+    photo_id    : photoField.id,
   }
 
   const editingId = FIELDS.id.value

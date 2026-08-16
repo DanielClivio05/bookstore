@@ -315,6 +315,139 @@
     .navlinks{gap:16px;font-size:.88rem}
     section{padding:58px 0}
   }
+
+  /* ============================================================
+     PICTURES
+     Book covers and shop photos, uploaded on the admin Photos page.
+     Every one of these is optional: with no picture set, each block
+     falls back to exactly the layout that was here before.
+     ============================================================ */
+
+  /* --- Cover on an event card --- */
+  .event.has-cover{grid-template-columns:76px 84px 1fr auto}
+  .ev-cover{
+    display:block;padding:0;border:0;background:var(--page);cursor:zoom-in;
+    width:76px;aspect-ratio:3/4;position:relative;overflow:hidden;
+    border-radius:3px 8px 8px 3px;
+    box-shadow:0 1px 2px rgba(16,16,16,.14),0 10px 20px -8px rgba(16,16,16,.4);
+    transition:transform .2s cubic-bezier(.2,.8,.3,1),box-shadow .2s;
+  }
+  .ev-cover img{width:100%;height:100%;object-fit:cover;display:block}
+  /* A paper spine down the left edge — it is what makes a flat photograph
+     read as a book rather than a thumbnail. */
+  .ev-cover::after{
+    content:'';position:absolute;top:0;bottom:0;left:0;width:7px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(0,0,0,.22),rgba(255,255,255,.18) 62%,rgba(0,0,0,.05));
+  }
+  .ev-cover:hover,.ev-cover:focus-visible{
+    transform:translateY(-3px) scale(1.02);
+    box-shadow:0 2px 4px rgba(16,16,16,.16),0 18px 30px -10px rgba(16,16,16,.45);
+  }
+
+  /* --- "From our shelves" band --- */
+  .paper{background:var(--page);border-top:1px solid #E3D8C3;border-bottom:1px solid #E3D8C3}
+  .shelfrow{
+    display:flex;gap:26px;align-items:flex-start;margin-top:38px;
+    padding:14px 2px 20px;overflow-x:auto;scroll-snap-type:x proximity;
+  }
+  .book{
+    flex:0 0 auto;width:152px;scroll-snap-align:start;cursor:zoom-in;
+    background:none;border:0;padding:0;font:inherit;color:inherit;text-align:center;
+  }
+  .book-cover{
+    display:block;position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;background:#fff;
+    border-radius:3px 9px 9px 3px;transform-origin:bottom center;
+    box-shadow:0 1px 3px rgba(16,16,16,.16),0 16px 24px -10px rgba(16,16,16,.45);
+    transition:transform .26s cubic-bezier(.2,.8,.3,1),box-shadow .26s;
+  }
+  .book-cover img{width:100%;height:100%;object-fit:cover;display:block}
+  .book-cover::after{
+    content:'';position:absolute;top:0;bottom:0;left:0;width:9px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(0,0,0,.24),rgba(255,255,255,.2) 62%,rgba(0,0,0,.06));
+  }
+  /* They lean apart a little, the way books do when the shelf isn't full */
+  .book:nth-child(2n) .book-cover{transform:rotate(-1.2deg)}
+  .book:nth-child(3n) .book-cover{transform:rotate(1deg)}
+  .book:hover .book-cover,.book:focus-visible .book-cover{
+    transform:translateY(-10px) rotate(0);
+    box-shadow:0 3px 6px rgba(16,16,16,.18),0 28px 40px -12px rgba(16,16,16,.5);
+  }
+  .book-cap{
+    display:block;margin-top:13px;font-family:'Zilla Slab',Georgia,serif;
+    font-size:.92rem;line-height:1.35;color:var(--ink-soft);
+  }
+  /* The plank they stand on — same four colours as the rule under the hero */
+  .plank{height:9px;display:flex;border-radius:5px;overflow:hidden;box-shadow:0 8px 16px -8px rgba(16,16,16,.55)}
+  .plank i{flex:1}
+  .plank i:nth-child(1){background:var(--slate)} .plank i:nth-child(2){background:var(--sage)}
+  .plank i:nth-child(3){background:var(--gold)}  .plank i:nth-child(4){background:var(--coral)}
+
+  /* --- Photo beside the About text --- */
+  .about-grid.has-photo{grid-template-columns:1fr 1fr .78fr}
+  .polaroid{
+    display:block;width:100%;padding:12px 12px 0;border:0;cursor:zoom-in;
+    background:#fff;border-radius:4px;font:inherit;color:inherit;
+    box-shadow:0 1px 3px rgba(16,16,16,.12),0 20px 34px -14px rgba(16,16,16,.4);
+    transform:rotate(1.5deg);
+    transition:transform .25s cubic-bezier(.2,.8,.3,1),box-shadow .25s;
+  }
+  .polaroid:hover,.polaroid:focus-visible{
+    transform:rotate(0) translateY(-5px);
+    box-shadow:0 3px 6px rgba(16,16,16,.14),0 30px 46px -16px rgba(16,16,16,.45);
+  }
+  .polaroid img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:2px}
+  .polaroid .cap{
+    display:block;font-family:'Caveat',cursive;font-weight:600;color:var(--slate);
+    font-size:1.18rem;line-height:1.25;padding:11px 4px 15px;
+  }
+
+  /* --- Thumbnail on a session row in the booking form --- */
+  .sess.has-pic{grid-template-columns:20px 34px 1fr auto}
+  .sess-pic{
+    width:34px;height:45px;overflow:hidden;background:var(--page);
+    border-radius:2px 5px 5px 2px;box-shadow:0 1px 4px rgba(16,16,16,.25);
+  }
+  .sess-pic img{width:100%;height:100%;object-fit:cover;display:block}
+
+  /* --- Lightbox --- */
+  .light{
+    position:fixed;inset:0;z-index:250;background:rgba(16,16,16,.86);cursor:zoom-out;
+    display:flex;align-items:center;justify-content:center;padding:6vh 6vw;
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+  }
+  .light figure{margin:0;max-width:min(880px,100%);text-align:center}
+  .light img{
+    display:block;margin:0 auto;max-width:100%;max-height:76vh;background:#fff;
+    border-radius:6px;box-shadow:0 30px 80px rgba(0,0,0,.6);
+  }
+  .light figcaption{
+    color:var(--page);font-family:'Zilla Slab',Georgia,serif;font-size:1.02rem;
+    margin-top:18px;line-height:1.4;
+  }
+  .light-x{
+    position:absolute;top:14px;right:18px;width:44px;height:44px;border-radius:50%;
+    border:0;background:rgba(255,255,255,.14);color:#fff;font-size:1.7rem;line-height:1;cursor:pointer;
+  }
+  .light-x:hover{background:rgba(255,255,255,.26)}
+
+  @media (max-width:860px){
+    .about-grid.has-photo{grid-template-columns:1fr}
+    .polaroid{max-width:340px;margin:0 auto}
+    .event.has-cover{grid-template-columns:60px 70px 1fr}
+    .ev-cover{width:60px}
+    .book{width:124px}
+    .shelfrow{gap:18px}
+  }
+  @media (max-width:640px){
+    .sess.has-pic{grid-template-columns:20px 34px 1fr}
+    .sess.has-pic .sess-right{grid-column:2 / -1}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .book-cover,.polaroid,.ev-cover{transition:none}
+    .book:hover .book-cover{transform:none}
+    .polaroid:hover{transform:rotate(1.5deg)}
+  }
 </style>
 </head>
 <body>
@@ -359,6 +492,16 @@
   </div>
 </section>
 
+<section id="shelves" class="paper" hidden>
+  <div class="wrap">
+    <p class="eyebrow" data-it="Dai nostri scaffali">From our shelves</p>
+    <h2 data-it="Libri che stiamo amando">Books we're loving</h2>
+    <p class="sub" id="shelf-sub"></p>
+    <div class="shelfrow" id="shelf-row"></div>
+    <div class="plank"><i></i><i></i><i></i><i></i></div>
+  </div>
+</section>
+
 <section id="about" class="warm">
   <div class="wrap">
     <p class="eyebrow" data-it="Ciao">Hello</p>
@@ -379,6 +522,8 @@
           <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
       </div>
+      <!-- Only appears once a picture is chosen on the admin Website page -->
+      <div id="about-photo" hidden></div>
     </div>
 
     <div class="twisters">
@@ -436,6 +581,15 @@
   </div>
 </div>
 
+<!-- Lightbox — any picture on the page opens here at full size. -->
+<div class="light" id="light" hidden>
+  <button class="light-x" id="light-x" aria-label="Close">&times;</button>
+  <figure>
+    <img id="light-img" src="" alt="">
+    <figcaption id="light-cap"></figcaption>
+  </figure>
+</div>
+
 <script>
 /* ============================================================
    CONFIG — same Supabase project as the moms-bookstore admin.
@@ -453,7 +607,11 @@ const T = {
             it:'Impossibile caricare gli eventi in questo momento.'},
   signup:  {en:'Sign up',                   it:'Iscriviti'},
   today:   {en:'Today',                     it:'Oggi'},
-  soon:    {en:'Coming soon.',              it:'Presto disponibile.'}
+  soon:    {en:'Coming soon.',              it:'Presto disponibile.'},
+  shelfSub:{en:'A few of the books on our shelves right now — come and have a flick through.',
+            it:'Alcuni dei libri sui nostri scaffali in questo momento — vieni a sfogliarli.'},
+  viewPic: {en:'View picture',              it:'Guarda la foto'},
+  close:   {en:'Close',                     it:'Chiudi'}
 };
 
 /* Everything the booking sheet says, in both languages. */
@@ -533,6 +691,8 @@ const FIELD_NAMES = {
 let lang = 'en';
 let events = [];
 let content = {};
+let photos = {};   // id -> photo row
+let shelf  = [];   // the ones ticked "on the shelf", in her order
 
 async function sb(path){
   const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
@@ -552,6 +712,25 @@ function pick(key){
 function esc(s){
   return String(s ?? '').replace(/[&<>"']/g, c =>
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---- Pictures ------------------------------------------------------------
+   Uploaded in the admin Photos page. The bucket is public, so the URL is
+   just the object path — no key, no signing, and the browser can cache it
+   for a year. Everything that renders a picture also renders fine without
+   one, so an empty library simply looks like the site did before. */
+
+function pic(id){ return id ? (photos[id] || null) : null; }
+
+function picUrl(photo, size){
+  if(!photo) return '';
+  const path = size === 'thumb' ? (photo.thumb_path || photo.path) : photo.path;
+  return SUPABASE_URL + '/storage/v1/object/public/photos/' + path;
+}
+
+function picCap(photo){
+  if(!photo) return '';
+  return ((lang === 'it' ? photo.caption_it : photo.caption_en) || photo.caption_en || '').trim();
 }
 
 /* ---- Booking helpers -----------------------------------------------------
@@ -615,8 +794,15 @@ function renderEvents(){
     else if(ev.signups_open === false) action = `<span class="pill">${esc(B.closed[lang])}</span>`;
     else action = `<button class="btn signup" type="button" onclick="openSheet('${esc(ev.id)}')">${esc(T.signup[lang])}</button>`;
 
+    const cover = pic(ev.photo_id);
+    const coverHtml = cover ? `
+        <button class="ev-cover" type="button" onclick="openLight('${esc(cover.id)}')"
+                aria-label="${esc(T.viewPic[lang])}: ${esc(ev.name)}">
+          <img src="${esc(picUrl(cover, 'thumb'))}" alt="${esc(picCap(cover) || ev.name)}" loading="lazy">
+        </button>` : '';
+
     return `
-      <article class="event e${i % 4}">
+      <article class="event e${i % 4}${cover ? ' has-cover' : ''}">${coverHtml}
         <div class="date"><span class="m">${esc(month)}</span><span class="d">${day}</span></div>
         <div>
           <h3>${esc(ev.name)}</h3>
@@ -723,10 +909,18 @@ function drawSheet(){
 
     // A div rather than a label: a <select> inside a <label> toggles the
     // checkbox when you try to open the dropdown.
+    // The cover again, small. It turns a wall of form fields into something
+    // she can recognise at a glance — "that's the pyjama one".
+    const cover = pic(ev.photo_id);
+    const pin = cover
+      ? `<span class="sess-pic"><img src="${esc(picUrl(cover, 'thumb'))}" alt="" loading="lazy"></span>`
+      : '';
+
     return `
-      <div class="sess${on ? ' on' : ''}" data-row="${esc(ev.id)}">
+      <div class="sess${on ? ' on' : ''}${cover ? ' has-pic' : ''}" data-row="${esc(ev.id)}">
         <input type="checkbox" data-pick="${esc(ev.id)}"${on ? ' checked' : ''}
                aria-label="${esc(ev.name)}">
+        ${pin}
         <span>
           <span class="sess-name">${esc(ev.name)}</span>
           <span class="sess-when">${esc(when)}${
@@ -1061,6 +1255,72 @@ function renderHours(txt){
   });
 }
 
+/* ============================================================
+   FROM OUR SHELVES
+   A row of covers standing on the four-colour plank, the same
+   rule that sits under the hero. The whole band disappears if
+   nothing is ticked "on the shelf" in the admin.
+   ============================================================ */
+
+function renderShelf(){
+  const sec = document.getElementById('shelves');
+  const row = document.getElementById('shelf-row');
+  const sub = document.getElementById('shelf-sub');
+
+  sec.hidden = shelf.length === 0;
+  if(!shelf.length){ row.innerHTML = ''; return; }
+
+  sub.textContent = pick('shelf_intro') || T.shelfSub[lang];
+
+  row.innerHTML = shelf.map(p => {
+    const cap = picCap(p);
+    return `
+      <button class="book" type="button" onclick="openLight('${esc(p.id)}')"
+              aria-label="${esc(T.viewPic[lang])}${cap ? ': ' + esc(cap) : ''}">
+        <span class="book-cover">
+          <img src="${esc(picUrl(p, 'thumb'))}" alt="${esc(cap)}" loading="lazy">
+        </span>
+        ${cap ? `<span class="book-cap">${esc(cap)}</span>` : ''}
+      </button>`;
+  }).join('');
+}
+
+
+/* ============================================================
+   LIGHTBOX
+   ============================================================ */
+
+const lightEl = document.getElementById('light');
+const lightImg = document.getElementById('light-img');
+const lightCap = document.getElementById('light-cap');
+let lastFocus = null;
+
+function openLight(id){
+  const photo = pic(id);
+  if(!photo) return;
+  lastFocus = document.activeElement;
+  lightImg.src = picUrl(photo, 'full');
+  lightImg.alt = picCap(photo);
+  lightCap.textContent = picCap(photo);
+  lightEl.hidden = false;
+  document.body.style.overflow = 'hidden';
+  document.getElementById('light-x').focus();
+}
+
+function closeLight(){
+  if(lightEl.hidden) return;
+  lightEl.hidden = true;
+  // Dropping the src stops a big picture sitting in memory on a phone.
+  lightImg.src = '';
+  document.body.style.overflow = '';
+  lastFocus?.focus?.();
+}
+
+lightEl.addEventListener('click', closeLight);
+document.getElementById('light-x').addEventListener('click', closeLight);
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLight(); });
+
+
 function renderContent(){
   [1,2].forEach(n => {
     const txt = pick('about_col_' + n);
@@ -1086,6 +1346,19 @@ function renderContent(){
       el.classList.toggle('blank', !txt);
     });
 
+  // A photo pinned up beside the About text. Optional — with nothing
+  // chosen the two text columns keep the full width, as before.
+  const aboutPic = pic(pick('about_photo'));
+  const aboutBox = document.getElementById('about-photo');
+  document.querySelector('.about-grid').classList.toggle('has-photo', !!aboutPic);
+  aboutBox.hidden = !aboutPic;
+  aboutBox.innerHTML = aboutPic ? `
+    <button class="polaroid" type="button" onclick="openLight('${esc(aboutPic.id)}')"
+            aria-label="${esc(T.viewPic[lang])}">
+      <img src="${esc(picUrl(aboutPic, 'thumb'))}" alt="${esc(picCap(aboutPic))}" loading="lazy">
+      <span class="cap">${esc(picCap(aboutPic))}</span>
+    </button>` : '';
+
   renderHours(pick('visit_hours'));
 
   [['social_instagram','s-instagram'],['social_facebook','s-facebook']].forEach(([key,id]) => {
@@ -1109,6 +1382,7 @@ function setLang(l){
   document.getElementById('btn-en').classList.toggle('on', l === 'en');
   document.getElementById('btn-it').classList.toggle('on', l === 'it');
   renderEvents();
+  renderShelf();
   renderContent();
   // The sheet is drawn from the same dictionary, so redraw it in place
   // rather than losing whatever the visitor has already ticked.
@@ -1120,18 +1394,24 @@ async function load(){
   state.textContent = T.loading[lang];
   const today = new Date().toISOString().slice(0,10);
   try{
-    const [evs, cnt] = await Promise.all([
+    const [evs, cnt, pics] = await Promise.all([
       sb(`events?select=*&published=eq.true&date=gte.${today}&order=date.asc`),
-      sb('site_content?select=*')
+      sb('site_content?select=*'),
+      // Pictures are one small table; fetching it whole is cheaper than
+      // joining, and the same rows serve the events, the shelf and About.
+      sb('photos?select=*&order=sort.asc,created_at.desc').catch(() => [])
     ]);
     events  = evs;
     content = Object.fromEntries(cnt.map(r => [r.key, r]));
+    photos  = Object.fromEntries((pics || []).map(r => [r.id, r]));
+    shelf   = (pics || []).filter(r => r.on_shelf);
   }catch(err){
     console.error('Supabase load failed:', err);
     state.hidden = false;
     state.textContent = T.failed[lang];
   }
   renderEvents();
+  renderShelf();
   renderContent();
 }
 

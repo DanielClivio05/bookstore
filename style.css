@@ -688,3 +688,213 @@ html.auth-pending body { visibility: hidden; }
   .form-row-2 { grid-template-columns: 1fr; }
   thead th:nth-child(4), tbody td:nth-child(4) { display: none; }
 }
+
+
+/* ============================================================
+   PICTURES
+   The admin side of the photo library: the drop zone, the
+   "choose a picture" modal, and the Photos page grid.
+   ============================================================ */
+
+/* Shared bits the Photos page borrows from the Events page */
+.section-label {
+  font-size: 11.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); margin-bottom: 14px;
+}
+.events-intro {
+  max-width: 660px; margin: -6px 0 26px;
+  font-size: 13.5px; line-height: 1.65; color: var(--muted);
+}
+.count-pill {
+  display: inline-block; margin-left: 6px; padding: 1px 8px;
+  border-radius: 999px; background: var(--surface-alt);
+  color: var(--muted); font-size: 11px; font-weight: 700;
+}
+
+/* ===== DROP ZONE ===== */
+.pick-drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; text-align: center; cursor: pointer;
+  padding: 26px 20px; border-radius: var(--radius);
+  border: 2px dashed var(--border-strong); background: var(--surface);
+  color: var(--muted); outline: none;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+}
+.pick-drop.big { padding: 40px 24px; margin-bottom: 6px; }
+.pick-drop:hover, .pick-drop:focus-visible { border-color: var(--primary); background: var(--primary-light); }
+.pick-drop.over { border-color: var(--primary); background: var(--primary-light); transform: scale(1.005); }
+.pick-drop-icon { font-size: 30px; line-height: 1; margin-bottom: 4px; }
+.pick-drop-main { font-size: 14.5px; font-weight: 600; color: var(--text); }
+.pick-drop-sub  { font-size: 12px; }
+
+.pick-status {
+  margin: 12px 0 4px; padding: 10px 14px;
+  border-radius: var(--radius-sm); font-size: 13px;
+  background: var(--primary-light); color: var(--primary-dark);
+  border: 1px solid var(--border);
+}
+.pick-status.bad {
+  background: var(--danger-light); color: var(--danger); border-color: #EDC9C0;
+  line-height: 1.6;
+}
+
+/* ===== "CHOOSE A PICTURE" MODAL ===== */
+.pick-back {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(42, 46, 51, 0.44);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 24px 16px; overflow-y: auto;
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+}
+.pick {
+  position: relative; width: min(760px, 100%); margin: auto;
+  background: var(--surface); border-radius: var(--radius);
+  padding: 22px 24px 18px;
+  box-shadow: 0 30px 70px rgba(42, 46, 51, 0.3);
+}
+.pick-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.pick-title { font-family: var(--font-display); font-size: 19px; font-weight: 600; }
+.pick-x {
+  width: 34px; height: 34px; border: 0; border-radius: 50%;
+  background: transparent; font-size: 24px; line-height: 1;
+  color: var(--muted); cursor: pointer;
+}
+.pick-x:hover { background: var(--surface-alt); color: var(--text); }
+
+.pick-grid {
+  display: grid; gap: 12px; margin-top: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+  max-height: 46vh; overflow-y: auto; padding: 2px;
+}
+.pick-loading { grid-column: 1/-1; text-align: center; padding: 30px; color: var(--muted); font-size: 13.5px; }
+.pick-item {
+  display: block; padding: 0; cursor: pointer; text-align: left;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); overflow: hidden;
+  transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+}
+.pick-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
+.pick-item.on { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.pick-item img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: var(--surface-alt); }
+.pick-cap {
+  display: block; padding: 7px 9px; font-size: 12px; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pick-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
+}
+.pick-count { font-size: 12px; color: var(--muted); }
+
+/* ===== PICTURE SLOT INSIDE A FORM ===== */
+.photo-field { display: flex; align-items: flex-start; gap: 14px; }
+.photo-slot {
+  flex-shrink: 0; width: 104px; height: 104px; padding: 0; cursor: pointer;
+  border-radius: var(--radius-sm); overflow: hidden;
+  background: var(--surface); border: 1.5px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; color: var(--muted); transition: border-color 0.15s, background 0.15s;
+}
+.photo-slot.empty { border-style: dashed; border-color: var(--border-strong); }
+.photo-slot:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+.photo-slot img { width: 100%; height: 100%; object-fit: contain; background: var(--surface-alt); display: block; }
+.photo-slot-plus { font-size: 22px; line-height: 1; }
+.photo-slot-text { font-size: 11.5px; font-weight: 600; }
+.photo-slot-side { padding-top: 4px; min-width: 0; }
+.photo-slot-cap {
+  font-size: 13px; color: var(--text); margin-bottom: 10px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.photo-slot-btns { display: flex; gap: 6px; }
+
+/* ===== PHOTOS PAGE ===== */
+.photo-grid {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+}
+.photo-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  display: flex; flex-direction: column;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.photo-card.on-shelf { border-color: var(--sage); }
+.photo-card-img { position: relative; background: var(--surface-alt); }
+/* contain, not cover: the library holds portrait book covers and landscape
+   shop photos side by side, and cropping either one hides what it is. */
+.photo-card-img img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; }
+.photo-flag {
+  position: absolute; left: 8px; bottom: 8px;
+  background: var(--sage-light); color: #3F5836; border: 1px solid var(--sage);
+  border-radius: 999px; padding: 2px 9px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.photo-del {
+  position: absolute; top: 8px; right: 8px;
+  width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--border); background: rgba(255, 255, 255, 0.92);
+  font-size: 13px; line-height: 1; transition: all 0.15s;
+}
+.photo-del:hover { border-color: var(--danger); background: var(--danger-light); }
+
+.photo-card-body { padding: 12px 13px 13px; display: flex; flex-direction: column; gap: 4px; }
+.photo-lbl {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--muted); margin-top: 4px;
+}
+.photo-lbl span { font-weight: 600; opacity: 0.75; }
+.photo-card-body input[type=text] {
+  width: 100%; padding: 7px 9px; font-size: 13px; font-family: inherit; color: var(--text);
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg); outline: none; transition: border-color 0.15s, background 0.15s;
+}
+.photo-card-body input[type=text]:focus { border-color: var(--primary); background: #fff; }
+.photo-card-body input.saved { border-color: var(--sage); background: var(--sage-light); }
+
+.photo-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.photo-toggle { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 12.5px; font-weight: 600; }
+.photo-toggle input { width: 16px; height: 16px; accent-color: var(--sage); }
+.photo-move { display: flex; gap: 4px; }
+.photo-move .btn-icon { padding: 2px 8px; font-size: 12px; }
+
+.photo-used {
+  margin-top: 9px; font-size: 11.5px; line-height: 1.5; color: var(--primary-dark);
+  background: var(--primary-light); border-radius: var(--radius-sm); padding: 6px 8px;
+}
+.photo-used.idle { color: var(--muted); background: var(--surface-alt); }
+
+/* ===== SHELF STRIP ===== */
+.shelf-block { margin-top: 30px; }
+.shelf-note { font-size: 12.5px; color: var(--muted); margin: -8px 0 14px; max-width: 620px; }
+.shelf-strip {
+  display: flex; gap: 10px; overflow-x: auto; padding: 14px 14px 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  position: relative;
+}
+/* The four-colour plank, same idea as the rule under the website's hero */
+.shelf-strip::after {
+  content: ''; position: absolute; left: 14px; right: 14px; bottom: 6px; height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,
+    var(--primary) 0 25%, var(--sage) 25% 50%, var(--gold) 50% 75%, var(--accent) 75% 100%);
+}
+.shelf-chip { position: relative; flex-shrink: 0; }
+.shelf-chip img {
+  display: block; width: 52px; height: 68px; object-fit: cover;
+  border-radius: 4px 6px 6px 4px; border: 1px solid var(--border);
+  box-shadow: 0 3px 8px rgba(42, 46, 51, 0.14);
+}
+.shelf-chip span {
+  position: absolute; top: -6px; left: -6px;
+  width: 19px; height: 19px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  font-size: 10.5px; font-weight: 700;
+  display: grid; place-items: center;
+}
+
+@media (max-width: 520px) {
+  .photo-field { flex-direction: column; }
+  .pick { padding: 18px 16px 14px; }
+}

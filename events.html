@@ -6,19 +6,6 @@
   <title>Book Nook Parking — Events</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ===== SECTION LABEL ===== */
-    .section-label {
-      font-size: 11.5px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--muted); margin-bottom: 14px;
-    }
-
-    /* ===== INTRO ===== */
-    .events-intro {
-      max-width: 640px; margin: -6px 0 26px;
-      font-size: 13.5px; line-height: 1.65; color: var(--muted);
-    }
-
     /* ===== LIVE / DRAFT BADGE ===== */
     .ev-badge {
       display: inline-block; vertical-align: middle;
@@ -31,6 +18,15 @@
     .ev-badge.draft { background: var(--surface-alt); color: var(--muted); border-color: var(--border-strong); }
 
     .ev-extra { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+
+    /* ===== COVER THUMBNAIL ON A SAVED EVENT ===== */
+    .ev-thumb {
+      width: 46px; height: 60px; flex-shrink: 0; align-self: center;
+      border-radius: 3px 5px 5px 3px; overflow: hidden;
+      border: 1px solid var(--border); background: var(--surface-alt);
+      box-shadow: 0 2px 6px rgba(42,46,51,0.14);
+    }
+    .ev-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     /* ===== FORM ===== */
     .events-form-card { max-width: 640px; }
@@ -63,6 +59,7 @@
       <a href="sales.html" class="nav-link">Sales</a>
       <a href="events.html" class="nav-link active">Events</a>
       <a href="bookings.html" class="nav-link">Bookings</a>
+      <a href="photos.html" class="nav-link">Photos</a>
       <a href="content.html" class="nav-link">Website</a>
       <button class="nav-add" onclick="location.href='add-book.html'">+ Add Book</button>
     </div>
@@ -157,6 +154,16 @@
         <div class="form-row" style="margin-top:18px">
           <label for="event-contact">Contact</label>
           <input type="text" id="event-contact" placeholder="booknooklane@gmail.com">
+        </div>
+
+        <div class="form-row">
+          <label>Cover picture</label>
+          <div id="event-photo"></div>
+          <div class="hint">
+            Shown beside this event on the website and in the booking form.
+            Pictures come from the <a href="photos.html">Photos</a> page — you can
+            add a new one without leaving here.
+          </div>
         </div>
 
         <div class="publish-row">
