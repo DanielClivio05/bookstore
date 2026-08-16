@@ -1,4 +1,7 @@
-// Sign-ups — who is coming to what, laid out on a calendar.
+// Bookings — who is coming to what, laid out on a calendar.
+//
+// A booking sits on the date of the SESSION, not the date it was made, so the
+// month view answers "what is happening that day" rather than "what arrived".
 //
 // The three tables are fetched separately and joined here rather than asking
 // PostgREST to embed them. There are only ever a few hundred rows, and it
@@ -239,7 +242,12 @@ function registerFor (ev) {
           <div class="${owed ? 'owed' : 'clear'}">${owed ? euro(owed) + ' to collect' : 'all paid'}</div>
           ${taken ? `<div class="clear">${euro(taken)} taken</div>` : ''}
         </div>
-        <button class="btn-icon" onclick="exportCsv('${ev.id}')" title="Download as a spreadsheet">⬇ CSV</button>
+        <div class="reg-tools">
+          <a class="btn-icon" href="events.html?edit=${encodeURIComponent(ev.id)}"
+             title="Change the date, time, price or places for this session">✏️ Edit session</a>
+          <button class="btn-icon" onclick="exportCsv('${ev.id}')"
+             title="Download as a spreadsheet">⬇ CSV</button>
+        </div>
       </div>
       ${lines.length ? `
       <div class="table-wrap">

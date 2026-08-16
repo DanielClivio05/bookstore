@@ -559,6 +559,8 @@ tbody td { padding: 11px 14px; }
 .reg-nums div span { font-size: 17px; font-weight: 700; color: var(--primary); }
 .reg-nums .owed  { color: var(--danger); font-weight: 600; }
 .reg-nums .clear { color: #4A6540; font-weight: 600; }
+.reg-tools { display: flex; gap: 6px; align-items: flex-start; }
+.reg-tools .btn-icon { white-space: nowrap; line-height: 1.5; }
 .reg .table-wrap { border: 0; border-radius: 0; box-shadow: none; }
 
 tr.cancelled td { opacity: 0.45; text-decoration: line-through; }
@@ -581,7 +583,7 @@ tr.fresh { background: var(--gold-light); }
 @media print {
   nav, .events-intro, .stats-grid, .cal, .cal-head,
   .setup-notice, .toast, .day-head button, .row-actions,
-  .reg-head .btn-icon { display: none !important; }
+  .reg-head .btn-icon, .reg-tools { display: none !important; }
   body { background: #fff; padding: 0; }
   .page { padding: 0; max-width: none; }
   .reg { break-inside: avoid; box-shadow: none; }

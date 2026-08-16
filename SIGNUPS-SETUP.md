@@ -16,7 +16,7 @@ on the website, in the booking form, and in the Sign-ups calendar.
 |---|---|
 | **Website** (`landing/index.html`) | Each event card shows its price and how many places are left. **Sign up** opens a bilingual booking sheet listing every open session with a 1–5 people counter and a running total — the same shape as the Jotform. |
 | **Events** (`events.html`) | The *Sign-up link* box is gone. In its place: **Price per person**, **Places**, and an **Accepting sign-ups** switch. Each event shows a bar of how full it is. |
-| **Sign-ups** (`signups.html`) | New page. A month calendar with every session on its date and a head count; click a day for the full register — who is coming, contact details, child's age, school, first visit, amount due, and a **paid** tick box. Printable, and exports to CSV. |
+| **Bookings** (`bookings.html`) | New page. A month calendar with every session on its date and a head count; click a day for the full register — who is coming, contact details, child's age, school, first visit, amount due, and a **paid** tick box. Each session also has an **Edit session** shortcut back to the Events page. Printable, and exports to CSV. |
 | **Database** (`signups.sql`) | Two new tables, four new columns on `events`, and one function that takes bookings. Already applied to the live project. |
 
 The form asks exactly what her Jotform asked and nothing more: full name,
@@ -45,7 +45,7 @@ limit; leave Price blank for a free session.
 ### 2. Turn on the notification e-mail
 
 She gets nothing by e-mail until this is done — bookings still arrive safely,
-they just sit in the Sign-ups page waiting to be noticed.
+they just sit in the Bookings page waiting to be noticed.
 
 1. Make a free account at **resend.com** and create an API key.
 2. Supabase dashboard → **Edge Functions → notify-signup → Secrets**, add:
@@ -56,7 +56,7 @@ they just sit in the Sign-ups page waiting to be noticed.
    | `NOTIFY_TO` | `booknooklane@gmail.com` |
    | `NOTIFY_FROM` | `Book Nook Lane <bookings@booknooklane.com>` |
    | `WEBHOOK_SECRET` | any long random string |
-   | `ADMIN_URL` | `https://moms-bookstore.netlify.app/signups.html` |
+   | `ADMIN_URL` | `https://moms-bookstore.netlify.app/bookings.html` |
 
    Resend will only send *from* a domain you have verified. Verifying
    `booknooklane.com` is a couple of DNS records at Cloudflare. Until then use

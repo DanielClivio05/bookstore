@@ -53,6 +53,29 @@ async function loadEvents () {
 
   allEvents = data || []
   renderEventList()
+  openFromQuery()
+}
+
+// The Bookings page links here as events.html?edit=<id> so she can jump
+// straight from a register to that session's settings. Runs once: the id is
+// stripped from the address bar afterwards, so a reload doesn't reopen it.
+let handledQuery = false
+
+function openFromQuery () {
+  if (handledQuery) return
+
+  const id = new URLSearchParams(location.search).get('edit')
+  if (!id) return
+
+  handledQuery = true
+  history.replaceState(null, '', location.pathname)
+
+  const ev = allEvents.find(x => x.id === id)
+  if (!ev) { showToast('That event no longer exists', true); return }
+
+  fillForm(ev)
+  form.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  FIELDS.name.focus({ preventScroll: true })
 }
 
 function renderEventList () {
